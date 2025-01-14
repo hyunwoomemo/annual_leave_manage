@@ -20,9 +20,9 @@ export default async function page(props) {
 
   return (
     // <ErrorBoundary errorComponent={() => <span>에러 발생</span>}>
-    <Suspense key={key} fallback={<span>로딩중...</span>}>
-      <CalendarPage />
-    </Suspense>
+    // <Suspense key={key} fallback={<span>로딩중...</span>}>
+    <CalendarPage />
+    // </Suspense>
     // </ErrorBoundary>
   );
 }
