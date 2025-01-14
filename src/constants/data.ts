@@ -60,14 +60,13 @@ export const navItems: NavItem[] = [
     icon: "user",
     shortcut: ["p", "p"],
     isActive: true,
-    // admin: true,
     items: [
       {
         title: "연차",
         url: "/dashboard/myannualleave",
         icon: "product",
         shortcut: ["m", "m"],
-        admin: true,
+        // admin: true,
       },
     ], // No child items
   },
