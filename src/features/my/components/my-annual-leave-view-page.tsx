@@ -37,7 +37,7 @@ const MyAnnualLeaveViewPage = ({ data }) => {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data.annual_leave_count}</div>
+            <div className="text-2xl font-bold">{data.annual_leave_count || 0}</div>
             {/* <p className="text-xs text-muted-foreground">+20.1% from last month</p> */}
           </CardContent>
         </Card>
@@ -60,7 +60,7 @@ const MyAnnualLeaveViewPage = ({ data }) => {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data.use_leave_count}</div>
+            <div className="text-2xl font-bold">{data.use_leave_count || 0}</div>
             {/* <p className="text-xs text-muted-foreground">+180.1% from last month</p> */}
           </CardContent>
         </Card>
