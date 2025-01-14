@@ -182,7 +182,7 @@ const AnnualLeaveCreateForm: React.FC<AnnualLeaveFormType> = ({ initialData, cat
 
     if (result.success) {
       toast.success("연차 신청이 완료되었습니다.");
-      router.push("/dashboard/calendar");
+      router.push("/dashboard/myannualleave");
     }
   };
 

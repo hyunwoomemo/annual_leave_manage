@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     // const rows = result.rows || result; // Depending on your query execution method
 
     if (result.affectedRows > 0) {
-      revalidatePath("/dashboard/calendar");
+      revalidatePath("/dashboard/myannualleave");
       return NextResponse.json({ success: true, error: "Success to add AnnualLeave" });
     } else {
       return NextResponse.json({ success: false, error: "Failed to add AnnualLeave" });

@@ -24,7 +24,7 @@ export default async function AnnualCreateViewPage() {
     console.log("jsonjson", json);
 
     if (json.success) {
-      revalidatePath("/dashboard/calendar");
+      revalidatePath("/dashboard/overview");
       // redirect("/dashboard/calendar");
 
       // setTimeout(() => {
