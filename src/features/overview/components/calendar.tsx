@@ -38,13 +38,16 @@ export default function Calendar({ data, totalCount }) {
 
   useEffect(() => {
     if (data) {
-      const events = data.map((item) => ({
-        id: item.id,
-        title: `${item.department} ${item.name}`, // 표시할 제목
-        start: item.type2 == 2 ? moment(item.start_date).format("YYYY-MM-DD 13:00") : item.type2 == 1 ? moment(item.start_date).format("YYYY-MM-DD 09:00") : item.start_date, // 시작 날짜
-        end: moment(item.end_date).add(1, "day").format("YYYY-MM-DD"), // 종료 날짜
-        allDay: item.type === 1 ? true : false,
-      }));
+      const events = data.map((item) => {
+        const type = item.type === 1 ? "연차" : item.type === 2 ? (item.type2 === 1 ? "오전 반차" : "오후 반차") : item.type === 3 ? "공가" : item.type === 4 ? "경조 휴가" : "휴가";
+        return {
+          id: item.id,
+          title: `${item.department} ${item.name} (${type})`, // 표시할 제목
+          start: item.type2 == 2 ? moment(item.start_date).format("YYYY-MM-DD 13:00") : item.type2 == 1 ? moment(item.start_date).format("YYYY-MM-DD 09:00") : item.start_date, // 시작 날짜
+          end: moment(item.end_date).add(1, "day").format("YYYY-MM-DD"), // 종료 날짜
+          allDay: item.type === 1 || item.type === 3 || item.type === 4 ? true : false,
+        };
+      });
       setEvents(events);
     }
   }, [data]);

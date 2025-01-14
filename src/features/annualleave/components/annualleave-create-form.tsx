@@ -22,6 +22,7 @@ import { RadioGroupIndicator } from "@radix-ui/react-radio-group";
 import { TimeInput } from "@nextui-org/date-input";
 import { revalidatePath } from "next/cache";
 import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
 interface AnnualLeaveFormType {
   initialData: any | null;
   categories: any;
@@ -391,6 +392,19 @@ const AnnualLeaveCreateForm: React.FC<AnnualLeaveFormType> = ({ initialData, cat
                       }}
                     />
                   )}
+                  <FormField
+                    // control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>연차 사유</FormLabel>
+                        <FormControl>
+                          <Textarea disabled={loading} placeholder="사유를 입력해주세요." {...field} value={field.value} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </>
             )}

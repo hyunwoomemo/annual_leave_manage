@@ -6,13 +6,13 @@ export async function POST(request: Request) {
   try {
     const data = await request.json(); // Parse the incoming JSON data
 
-    const { employee_id, type, type2, start_date, end_date, start_time, end_time } = data;
+    const { employee_id, type, type2, start_date, end_date, start_time, end_time, description } = data;
 
     console.log("Received data:", data);
 
-    const values = [employee_id, start_date, end_date || start_date, type, type2, start_time, end_time];
+    const values = [employee_id, start_date, end_date || start_date, type, type2, start_time, end_time, description];
 
-    let sql = `INSERT INTO annual_leave (employee_id, start_date, end_date, type,type2, start_time, end_time) 
+    let sql = `INSERT INTO annual_leave (employee_id, start_date, end_date, type,type2, start_time, end_time, description) 
                VALUES (${values.map(() => "?").join(", ")})`;
 
     // Log the query and values for debugging

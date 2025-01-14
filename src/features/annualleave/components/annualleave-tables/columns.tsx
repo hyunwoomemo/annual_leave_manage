@@ -134,6 +134,16 @@ export const columns: ColumnDef<Product>[] = [
   //   ),
   // },
   {
+    accessorKey: "description",
+    header: "사유",
+    cell: ({ row }) => (
+      <p title={row.getValue("description")} style={{ maxWidth: 100 }} className="">
+        {row.getValue("description")}
+      </p>
+    ),
+    // cell: ({ row }) => <UpdateAction row={row} />,
+  },
+  {
     accessorKey: "status",
     header: "상태",
     cell: ({ row }) => <UpdateAction row={row} />,
