@@ -149,8 +149,8 @@ export const columns: ColumnDef<Product>[] = [
     cell: ({ row }) => <UpdateAction row={row} />,
   },
 
-  // {
-  //   id: "actions",
-  //   cell: ({ row }) => <CellAction data={row.original} />,
-  // },
+  {
+    id: "actions",
+    cell: ({ row }) => <CellAction data={row.original} />,
+  },
 ];

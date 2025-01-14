@@ -410,7 +410,7 @@ const AnnualLeaveCreateForm: React.FC<AnnualLeaveFormType> = ({ initialData, cat
             )}
           </div>
           <Button className={cn(buttonVariants(), "text-xs md:text-sm")} type="submit">
-            <Plus className="mr-2 h-4 w-4" /> Add New
+            <Plus className="mr-2 h-4 w-4" /> 직원 등록
           </Button>
         </form>
       </Form>

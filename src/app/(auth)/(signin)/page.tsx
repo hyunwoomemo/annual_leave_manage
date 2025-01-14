@@ -13,7 +13,7 @@ export default async function Page() {
   console.log("session123", session);
 
   if (session?.user.name) {
-    redirect("/dashboard/overview");
+    redirect("/dashboard/calendar");
   } else {
     return <SignInViewPage />;
   }

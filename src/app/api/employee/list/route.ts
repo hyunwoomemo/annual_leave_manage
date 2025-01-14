@@ -11,7 +11,7 @@ export async function GET(req: Request) {
     const department = searchParams.get("department") !== "null" && searchParams.get("department") ? searchParams.get("department") : "";
 
     // 총 갯수 쿼리
-    let countSql = `SELECT COUNT(*) AS totalCount FROM employees`;
+    let countSql = `SELECT COUNT(*) AS totalCount FROM employees where status > -1`;
     let dataSql = `SELECT 
     *,
     CASE 
@@ -21,7 +21,7 @@ export async function GET(req: Request) {
             TIMESTAMPDIFF(MONTH, startDate, CURRENT_DATE()) + 
             FLOOR(TIMESTAMPDIFF(YEAR, startDate, CURRENT_DATE()) / 1) * 15 
     END AS annual_leave_count
-FROM employees`;
+FROM employees where status > -1`;
 
     let conditions = [];
     let values = [];

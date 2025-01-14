@@ -43,7 +43,7 @@ export default async function Page(props: pageProps) {
         <div className="flex items-start justify-between">
           <Heading title="직원" description="Manage employee (Server side table functionalities.)" />
           <Link href="/dashboard/employee/create" className={cn(buttonVariants(), "text-xs md:text-sm")}>
-            <Plus className="mr-2 h-4 w-4" /> Add New
+            <Plus className="mr-2 h-4 w-4" /> 직원 등록
           </Link>
         </div>
         <Separator />

@@ -23,6 +23,10 @@ export const columns: ColumnDef<Product>[] = [
   //   }
   // },
   {
+    accessorKey: "id",
+    header: "사번",
+  },
+  {
     accessorKey: "name",
     header: "이름",
   },
@@ -59,8 +63,8 @@ export const columns: ColumnDef<Product>[] = [
     // },
   },
 
-  // {
-  //   id: "actions",
-  //   cell: ({ row }) => <CellAction data={row.original} />,
-  // },
+  {
+    id: "actions",
+    cell: ({ row }) => <CellAction data={row.original} />,
+  },
 ];
