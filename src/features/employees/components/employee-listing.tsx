@@ -24,5 +24,7 @@ export default async function EmployeeListingPage({}: EmployeeListingPage) {
   // const data = await fakeProducts.getProducts(filters);
   const totalEmployees = totalCount;
 
+  console.log("debug2::: ", data, totalCount);
+
   return <ProductTable columns={columns} data={data} totalItems={totalEmployees} />;
 }

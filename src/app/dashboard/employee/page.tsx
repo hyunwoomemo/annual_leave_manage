@@ -35,6 +35,8 @@ export default async function Page(props: pageProps) {
     return { value: v.department, label: v.department };
   });
 
+  console.log("debug::: ", json, departments);
+
   return (
     <PageContainer>
       <div className="space-y-4">
