@@ -61,7 +61,7 @@ export default function UserAuthForm() {
               <FormItem>
                 <FormLabel>사번</FormLabel>
                 <FormControl>
-                  <Input placeholder="사번을 입력해주세요." disabled={loading} {...field} />
+                  <Input placeholder="사번을 입력해주세요." disabled={loading} {...field} value={field.value} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -74,7 +74,7 @@ export default function UserAuthForm() {
               <FormItem>
                 <FormLabel>비밀번호</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="비밀번호를 입력해주세요." disabled={loading} {...field} />
+                  <Input type="password" placeholder="비밀번호를 입력해주세요." disabled={loading} {...field} value={field.value} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

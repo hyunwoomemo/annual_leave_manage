@@ -25,8 +25,8 @@ export default function SignInViewPage() {
         </div>
         <div className="relative z-20 mt-auto">
           <blockquote className="space-y-2">
-            <p className="text-lg">&ldquo;This library has saved me countless hours of work and helped me deliver stunning designs to my clients faster than ever before.&rdquo;</p>
-            <footer className="text-sm">Sofia Davis</footer>
+            <p className="text-lg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero facere molestiae culpa, optio ea vitae maxime error recusandae explicabo ab?</p>
+            {/* <footer className="text-sm">Sofia Davis</footer> */}
           </blockquote>
         </div>
       </div>
@@ -37,7 +37,7 @@ export default function SignInViewPage() {
             <p className="text-sm text-muted-foreground"></p>
           </div>
           <UserAuthForm />
-          <p className="px-8 text-center text-sm text-muted-foreground">
+          {/* <p className="px-8 text-center text-sm text-muted-foreground">
             By clicking continue, you agree to our{" "}
             <Link href="/terms" className="underline underline-offset-4 hover:text-primary">
               Terms of Service
@@ -47,7 +47,7 @@ export default function SignInViewPage() {
               Privacy Policy
             </Link>
             .
-          </p>
+          </p> */}
         </div>
       </div>
     </div>
