@@ -15,7 +15,7 @@ export const CATEGORY_OPTIONS = [
   { value: "Beauty Products", label: "Beauty Products" },
 ];
 export function useProductTableFilters() {
-  const [searchQuery, setSearchQuery] = useQueryState("q", searchParams.q.withOptions({ shallow: false, throttleMs: 1000 }).withDefault(""));
+  const [searchQuery, setSearchQuery] = useQueryState("q", searchParams.q.withOptions({ shallow: false, throttleMs: 500 }).withDefault(""));
 
   const [departmentsFilter, setDepartmentsFilter] = useQueryState("departments", searchParams.departments.withOptions({ shallow: false }).withDefault(""));
 

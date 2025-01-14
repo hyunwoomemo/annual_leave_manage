@@ -41,7 +41,7 @@ FROM employees`;
       countSql += ` WHERE ` + conditions.join(" AND ");
       dataSql += ` WHERE ` + conditions.join(" AND ");
     }
-
+    dataSql += " order by created_at desc";
     dataSql += ` LIMIT ? OFFSET ?`;
     values.push(limit, (page - 1) * limit);
 

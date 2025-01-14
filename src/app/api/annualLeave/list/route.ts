@@ -14,7 +14,7 @@ export async function GET(req: Request) {
     // 총 갯수 쿼리
     let countSql = `SELECT COUNT(id) AS totalCount FROM annual_leave`;
 
-    let dataSql = "SELECT al.*, e.name, e.department FROM annual_leave al  left join employees e on al.employee_id = e.id";
+    let dataSql = "SELECT al.*, e.name, e.department FROM annual_leave al  left join employees e on al.employee_id = e.id ";
 
     let conditions = [];
     let values = [];
@@ -42,6 +42,7 @@ export async function GET(req: Request) {
     }
 
     // countSql += " group by e.id";
+    dataSql += " order by created_at desc";
     dataSql += ` LIMIT ? OFFSET ?`;
     values.push(limit, (Number(page) - 1) * Number(limit));
 
