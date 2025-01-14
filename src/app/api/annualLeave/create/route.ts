@@ -2,7 +2,7 @@ import executeQuery from "@/lib/db";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
-export async function POST(request: Request, response: Response) {
+export async function POST(request: Request) {
   try {
     const data = await request.json(); // Parse the incoming JSON data
 
