@@ -41,11 +41,17 @@ export async function GET(req: Request) {
       values.push(year, month);
     });
 
+    // status > -1 조건 추가
+    const statusCondition = `al.status > -1`;
+
     // 조건 연결
     if (conditions.length > 0) {
-      const combinedConditions = conditions.join(" OR ");
-      countSql += ` WHERE ` + combinedConditions;
-      dataSql += ` WHERE ` + combinedConditions;
+      const combinedConditions = `(${conditions.join(" OR ")})`;
+      countSql += ` WHERE ` + combinedConditions + ` AND ` + statusCondition;
+      dataSql += ` WHERE ` + combinedConditions + ` AND ` + statusCondition;
+    } else {
+      countSql += ` WHERE ` + statusCondition;
+      dataSql += ` WHERE ` + statusCondition;
     }
 
     const countResult = await executeQuery(countSql, values);

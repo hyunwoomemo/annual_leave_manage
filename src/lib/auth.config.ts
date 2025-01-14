@@ -25,7 +25,7 @@ const authConfig = {
 
         const { employee_id, password } = credentials;
 
-        const sql = "select * from employees where id = ? and password = ?";
+        const sql = "select * from employees where id = ? and password = ? and status > -1";
         const values = [employee_id, password];
 
         const [user] = await executeQuery(sql, values);

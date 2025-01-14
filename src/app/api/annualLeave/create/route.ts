@@ -31,6 +31,8 @@ export async function POST(request: Request) {
 
     if (result.affectedRows > 0) {
       revalidatePath("/dashboard/myannualleave");
+      revalidatePath("/dashboard/calendar");
+
       return NextResponse.json({ success: true, error: "Success to add AnnualLeave" });
     } else {
       return NextResponse.json({ success: false, error: "Failed to add AnnualLeave" });

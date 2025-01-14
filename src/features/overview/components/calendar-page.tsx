@@ -8,8 +8,10 @@ export default async function CalendarPage() {
 
   console.log("yyy", year, month, process.env.NEXT_PUBLIC_API_URL);
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/annualLeave/listByMonth?year=${year}&month=${month}`, { next: { tags: ["annualLeaveListByMonth"] } });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/annualLeave/listByMonth?year=${year}&month=${month}`);
   const { totalCount, data } = await res.json();
+
+  console.log("datadata", data);
 
   return <Calendar totalCount={totalCount} data={data}></Calendar>;
 }

@@ -1,4 +1,5 @@
 "use client";
+import { deleteEmployee } from "@/actions/employee/delete";
 import { AlertModal } from "@/components/modal/alert-modal";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -27,16 +28,17 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   };
 
   const onConfirm = async () => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/employee/update`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json", // Content-Type 추가
-      },
-      body: JSON.stringify({ status: -1, id: data.id }),
-    });
-    const json = await res.json();
+    // const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/employee/update`, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json", // Content-Type 추가
+    //   },
+    //   body: JSON.stringify({ status: -1, id: data.id }),
+    // });
+    // const json = await res.json();
+    const res = await deleteEmployee(data.id);
 
-    if (json.success) {
+    if (res) {
       toast.success("직원이 삭제되었습니다.");
       setOpen(false);
     } else {

@@ -17,9 +17,7 @@ export default async function MyAnnualLeaveListing({ employee_id }: EmployeeList
   // const { success, data } = await res.json();
   // console.log("employees", data);
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/annualLeave/list?page=${page}&limit=${pageLimit}&search=${search}&department=${departments}&employee_id=${employee_id}`, {
-    next: { tags: ["annualLeaveList"] },
-  });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/annualLeave/list?page=${page}&limit=${pageLimit}&search=${search}&department=${departments}&employee_id=${employee_id}`);
   const { totalCount, data } = await res.json();
 
   // const data = await fakeProducts.getProducts(filters);

@@ -16,9 +16,7 @@ export async function POST(request: Request) {
     //   data: { name, department, hp, birthDate, startDate },
     // });
 
-    console.log("Received data:", data);
-
-    const sql = "insert into employees (name, department,hp,birthDate, startDate, password) values (?,?,?,?,?, ?)";
+    const sql = "insert into employees (name, department,hp,birthDate, startDate, password) values (?,?,?,?,?,?)";
     const values = [name, department, hp, birthDate, startDate, moment(birthDate).format("YYMMDD")];
 
     const rows = await executeQuery(sql, values);

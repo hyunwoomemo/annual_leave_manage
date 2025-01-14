@@ -56,6 +56,13 @@ export const columns: ColumnDef<Product>[] = [
     },
   },
   {
+    accessorKey: "enddate",
+    header: "퇴사일",
+    cell: ({ row }) => {
+      return row.getValue("enddate") ? moment(row.getValue("enddate")).format("YYYY-MM-DD") : "";
+    },
+  },
+  {
     accessorKey: "annual_leave_count",
     header: "연차 갯수",
     // cell: ({ row }) => {

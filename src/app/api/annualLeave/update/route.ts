@@ -33,8 +33,12 @@ export async function POST(request: Request) {
     // 데이터베이스 실행
     const result = await executeQuery(sql, values);
 
+    console.log("resultresult", result);
+
     if (result.affectedRows > 0) {
       revalidatePath("/dashboard/annualleave");
+      revalidatePath("/dashboard/calendar");
+
       return NextResponse.json({ success: true, message: "Annual_leave updated successfully" }, { status: 200 });
     } else {
       return NextResponse.json({ success: false, message: "Failed to update Annual_leave" }, { status: 400 });
