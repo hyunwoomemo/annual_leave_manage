@@ -17,7 +17,7 @@ export default async function EmployeeListingPage({}: EmployeeListingPage) {
   // const { success, data } = await res.json();
   // console.log("employees", data);
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/employee/list?page=${page}&limit=${pageLimit}&search=${search}&department=${departments}`, { next: { tags: ["employeesList"] } });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/employee/list?page=${page}&limit=${pageLimit}&search=${search}&department=${departments}`);
   const { success, data, totalCount } = await res.json();
   console.log("data", data, totalCount);
 

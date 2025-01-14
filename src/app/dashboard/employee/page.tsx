@@ -28,14 +28,12 @@ export default async function Page(props: pageProps) {
   // This key is used for invoke suspense if any of the search params changed (used for filters).
   const key = serialize({ ...searchParams });
 
-  const res = await fetch(`http://localhost:3000/api/site/departments`);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/site/departments`);
   const json = await res.json();
 
   const departments = json.data.map((v) => {
     return { value: v.department, label: v.department };
   });
-
-  console.log("departments", departments);
 
   return (
     <PageContainer>
