@@ -121,8 +121,10 @@ const AnnualLeaveManageForm: React.FC<AnnualLeaveFormType> = ({ employee, create
     console.log("resultresult", result);
 
     if (result.success) {
-      toast.success("연차 지급 또는 차감이 완료되었습니다.");
+      toast.success("요청 성공하였습니다.");
       router.back();
+    } else {
+      toast.success("요청 실패하였습니다.");
     }
   };
 
