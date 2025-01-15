@@ -1,4 +1,5 @@
 import executeQuery from "@/lib/db";
+import moment from "moment";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
@@ -7,7 +8,7 @@ export async function POST(request: Request) {
     const data = await request.json(); // Parse the incoming JSON data
 
     // Destructure incoming data
-    const { employee_id, type, type2, start_date, end_date, start_time, end_time, description, given_number } = data;
+    const { name, employee_id, type, type2, start_date, end_date, start_time, end_time, description, given_number } = data;
 
     // Get the current date (today)
     const today = new Date().toISOString().split("T")[0]; // Format as YYYY-MM-DD
@@ -39,6 +40,47 @@ export async function POST(request: Request) {
     if (result.affectedRows > 0) {
       revalidatePath("/dashboard/myannualleave");
       revalidatePath("/dashboard/calendar");
+      const typeText =
+        type == 1 ? "연차" : type == 2 && type2 == 1 ? "오전 반차" : type == 2 && type2 == 2 ? "오후 반차" : type == 3 ? "반반차" : type == 4 ? "경조 휴가" : type == 5 ? "공가" : "연차";
+      let dateText;
+      const daysDifference = moment(end_date || start_date).diff(moment(start_date), "days");
+      console.log(";tttt", type, type2, daysDifference, end_date, start_date);
+
+      if (type === 3) {
+        dateText = `${moment(start_date).format("YYYY-MM-DD HH:mm")} ~ (${moment(end_date).format("HH:mm")})`;
+      } else {
+        if (daysDifference === 0) {
+          dateText = moment(start_date).format("YYYY-MM-DD");
+        } else {
+          dateText = `${moment(start_date).format("YYYY-MM-DD")} ~ ${moment(end_date).format("YYYY-MM-DD")}`;
+        }
+      }
+
+      const text = `(링크) \n${name}님이 연차를 신청했습니다. \n\n 종류: ${typeText} \n 날짜: ${dateText}`;
+      console.log("jjjj", process.env.BOT_ID, process.env.CHANNEL_ID, text);
+      if (type < 11) {
+        const res = await fetch(`https://api.telegram.org/${process.env.BOT_ID}/sendMessage`, {
+          method: "POST",
+          body: JSON.stringify({
+            chat_id: process.env.CHANNEL_ID,
+            text,
+            entities: [
+              {
+                type: "text_link",
+                url: "https://annual-leave-manage.vercel.app/dashboard/annualleave",
+                offset: 0,
+                length: 4,
+              },
+            ],
+            disable_web_page_preview: true,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const json = await res.json();
+        console.log("jjjj", json);
+      }
 
       return NextResponse.json({ success: true, error: "Success to add AnnualLeave" });
     } else {

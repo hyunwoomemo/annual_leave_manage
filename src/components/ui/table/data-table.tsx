@@ -51,7 +51,7 @@ export function DataTable<TData, TValue>({ columns, data, totalItems, pageSizeOp
 
   return (
     <div className="space-y-4">
-      <ScrollArea className="grid h-[calc(80vh-220px)] rounded-md border md:h-[calc(90dvh-240px)]">
+      <ScrollArea className="grid h-[calc(80vh-220px)] rounded-md border md:h-[calc(90dvh-240px)] text-nowrap">
         <Table className="relative">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

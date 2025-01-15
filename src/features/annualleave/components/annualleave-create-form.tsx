@@ -169,6 +169,7 @@ const AnnualLeaveCreateForm: React.FC<AnnualLeaveFormType> = ({ initialData, cat
     }
 
     formData.append("employee_id", employee.id);
+    formData.append("name", employee.name);
 
     console.log("formDataformDataformData", formData);
 
