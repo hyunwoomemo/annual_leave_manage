@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     // Adjust start_date, end_date, and status based on the type condition
     const adjustedStartDate = type > 10 ? today : start_date;
     const adjustedEndDate = type > 10 ? today : end_date || start_date;
-    const adjustedGivenNumber = type == 11 ? given_number : -given_number;
+    const adjustedGivenNumber = type == 11 ? given_number : type == 12 ? -given_number : null;
     const status = type > 10 ? 1 : 0; // Set status to 1 if type > 10, otherwise keep it null
 
     const values = [employee_id, adjustedStartDate, adjustedEndDate, type, type2, start_time, end_time, description, adjustedGivenNumber, status];
