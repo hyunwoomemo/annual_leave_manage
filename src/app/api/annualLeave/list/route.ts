@@ -7,6 +7,8 @@ export async function GET(req: Request) {
     const limit = parseInt(searchParams.get("limit") || "10", 10);
     const page = parseInt(searchParams.get("page") || "1", 10);
     const employee_id = searchParams.get("employee_id") || "";
+    const apply = searchParams.get("apply") || false;
+
 
     const search = searchParams.get("search") !== "null" && searchParams.get("search") ? searchParams.get("search") : "";
     const department = searchParams.get("department") !== "null" && searchParams.get("department") ? searchParams.get("department") : "";
@@ -36,6 +38,10 @@ export async function GET(req: Request) {
     if (employee_id) {
       conditions.push(`al.employee_id = ?`);
       values.push(employee_id);
+    }
+
+    if (apply) {
+      conditions.push(`al.type < 11`);
     }
 
     if (conditions.length > 0) {

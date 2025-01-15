@@ -13,7 +13,7 @@ export default async function AnnualLeaveListingPage({}: AnnualLeaveListingPage)
   const pageLimit = searchParamsCache.get("limit");
   const departments = searchParamsCache.get("departments");
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/annualLeave/list?page=${page}&limit=${pageLimit}&search=${search}&department=${departments}`);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/annualLeave/list?page=${page}&limit=${pageLimit}&search=${search}&department=${departments}&apply=true`);
   const { totalCount, data } = await res.json();
 
   // const data = await fakeProducts.getProducts(filters);
