@@ -35,10 +35,6 @@ export const company = {
 export default function AppSidebar({ count }) {
   const { status, data: session } = useSession();
   const pathname = usePathname();
-  const { state, isMobile } = useSidebar();
-  const router = useRouter();
-
-  console.log("sessionsessionsessionsession", status);
 
   return (
     <Sidebar collapsible="icon">

@@ -42,7 +42,7 @@ export async function GET(req: Request) {
     });
 
     // status > -1 조건 추가
-    const statusCondition = `al.status > -1`;
+    const statusCondition = `al.status = 1`;
 
     // 조건 연결
     if (conditions.length > 0) {

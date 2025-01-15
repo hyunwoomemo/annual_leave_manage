@@ -51,6 +51,8 @@ const EmployeeCreateForm = ({ create, update }) => {
     if (res.success) {
       toast.success("직원이 등록되었습니다.");
       route.push("/dashboard/employee");
+    } else {
+      toast.error(res.message || "오류가 발생하였습니다.");
     }
   };
 

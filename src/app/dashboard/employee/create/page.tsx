@@ -21,6 +21,7 @@ const page = async () => {
 
     if (result.success) {
       revalidatePath("/dashboard/employee");
+    } else {
     }
 
     return result;

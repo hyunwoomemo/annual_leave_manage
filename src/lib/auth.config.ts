@@ -3,6 +3,7 @@ import CredentialProvider from "next-auth/providers/credentials";
 import GithubProvider from "next-auth/providers/github";
 import db from "./db";
 import executeQuery from "./db";
+import { CredentialsSignin } from "next-auth";
 
 const authConfig = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -21,34 +22,44 @@ const authConfig = {
         },
       },
       async authorize(credentials, req) {
-        console.log("credentialscredentials", credentials);
-
         const { employee_id, password } = credentials;
 
-        const sql = "select * from employees where id = ? and password = ? and status > -1";
-        const values = [employee_id, password];
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
+          method: "POST",
+          body: JSON.stringify({ employee_id, password }),
+        });
 
-        const [user] = await executeQuery(sql, values);
+        const data = await res.json();
 
-        console.log("useruser", user);
+        // console.log("authorizeauthorize", res.ok, data);
+        console.log("authorizeauthorize", res.ok, res.status, res.statusText);
 
         // const user = {
         //   id: "1",
         //   name: "John",
         //   email: credentials?.email as string,
         // };
-        if (user) {
-          // Any object returned will be saved in `user` property of the JWT
+        if (res.ok) {
+          // const user = {
+          //   id: "1",
+          //   name: "John",
+          //   email: credentials?.email as string,
+          // };
+          // return data.data;
           return {
-            id: user.id,
-            name: user.name,
-            isAdmin: user.is_admin === 1, // 관리자 여부를 Boolean 값으로 변환
+            id: data.data.id,
+            name: data.data.name,
+            isAdmin: data.data.is_admin === 1, // 관리자 여부
           };
         } else {
-          // If you return null then an error will be displayed advising the user to check their details.
-          return null;
-
-          // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
+          const credentialsSignin = new CredentialsSignin();
+          // new CredentialsSignin(data.message);
+          if (res.status === 404) {
+            credentialsSignin.code = "no_user";
+          } else if (res.status === 401) {
+            credentialsSignin.code = "wrong_password";
+          }
+          throw credentialsSignin;
         }
       },
     }),

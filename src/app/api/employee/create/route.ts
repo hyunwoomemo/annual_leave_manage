@@ -16,6 +16,19 @@ export async function POST(request: Request) {
     //   data: { name, department, hp, birthDate, startDate },
     // });
 
+    const existingSql = "select count(id) as count from employees where name = ? and birthdate = ? and > status > -1";
+    const existingValues = [name, birthDate];
+
+    console.log("123123", existingSql, existingValues);
+
+    const [{ count }] = await executeQuery(existingSql, existingValues);
+
+    console.log("eeeee", count);
+
+    if (count > 0) {
+      return NextResponse.json({ success: false, message: "이미 존재하는 직원입니다." }, { status: 200 });
+    }
+
     const sql = "insert into employees (name, department,hp,birthDate, startDate, password) values (?,?,?,?,?,?)";
     const values = [name, department, hp, birthDate, startDate, moment(birthDate).format("YYMMDD")];
 

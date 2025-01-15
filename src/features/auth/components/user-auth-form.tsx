@@ -39,15 +39,37 @@ export default function UserAuthForm() {
   }, []);
 
   const onSubmit = async (data: UserFormValue) => {
-    startTransition(async () => {
+    try {
       const res = await signIn("credentials", {
         employee_id: data.employee_id,
         password: data.password,
-        callbackUrl: callbackUrl ?? "/dashboard",
-        csrfToken: csrfToken,
+        redirect: false, // redirect를 수동으로 처리
       });
-      toast.success("Signed In Successfully!");
-    });
+
+      console.log("sssignin res", res);
+
+      if (res.code === "wrong_password") {
+        toast.error("로그인에 실패했습니다. 다시 시도해주세요.");
+      } else {
+        if (res.code === "no_user") {
+          toast.error("로그인에 실패했습니다. 다시 시도해주세요.");
+        } else {
+          toast.success("로그인 성공!");
+          window.location.href = callbackUrl ?? "/dashboard";
+        }
+      }
+      // if (res?.ok) {
+      //   // 로그인 성공 시
+      //   toast.success("로그인 성공!");
+      //   window.location.href = callbackUrl ?? "/dashboard";
+      // } else {
+      //   // 로그인 실패 시
+      //   toast.error(res?.error || "로그인에 실패했습니다. 다시 시도해주세요.");
+      // }
+    } catch (err) {
+      console.error(err);
+      toast.error("로그인 중 문제가 발생했습니다.");
+    }
   };
 
   return (
