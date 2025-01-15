@@ -1,19 +1,30 @@
 import executeQuery from "@/lib/db";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
     const data = await request.json(); // Parse the incoming JSON data
 
-    const { employee_id, type, type2, start_date, end_date, start_time, end_time, description } = data;
+    // Destructure incoming data
+    const { employee_id, type, type2, start_date, end_date, start_time, end_time, description, given_number } = data;
 
-    console.log("Received data:", data);
+    // Get the current date (today)
+    const today = new Date().toISOString().split("T")[0]; // Format as YYYY-MM-DD
 
-    const values = [employee_id, start_date, end_date || start_date, type, type2, start_time, end_time, description];
+    // Adjust start_date, end_date, and status based on the type condition
+    const adjustedStartDate = type > 10 ? today : start_date;
+    const adjustedEndDate = type > 10 ? today : end_date || start_date;
+    const adjustedGivenNumber = type === 11 ? given_number : -given_number;
+    const status = type > 10 ? 1 : 0; // Set status to 1 if type > 10, otherwise keep it null
 
-    let sql = `INSERT INTO annual_leave (employee_id, start_date, end_date, type,type2, start_time, end_time, description) 
-               VALUES (${values.map(() => "?").join(", ")})`;
+    const values = [employee_id, adjustedStartDate, adjustedEndDate, type, type2, start_time, end_time, description, adjustedGivenNumber, status];
+
+    // Prepare SQL query with an additional status column
+    let sql = `
+      INSERT INTO annual_leave (employee_id, start_date, end_date, type, type2, start_time, end_time, description, given_number, status) 
+      VALUES (${values.map(() => "?").join(", ")})
+    `;
 
     // Log the query and values for debugging
     console.log("SQL query:", sql);
@@ -25,10 +36,6 @@ export async function POST(request: Request) {
     // Log the result from executeQuery to understand its structure
     console.log("Execute query result:", result, result.affectedRows);
 
-    // If result is an object with a specific property you need, extract it
-    // Example:
-    // const rows = result.rows || result; // Depending on your query execution method
-
     if (result.affectedRows > 0) {
       revalidatePath("/dashboard/myannualleave");
       revalidatePath("/dashboard/calendar");
@@ -37,9 +44,6 @@ export async function POST(request: Request) {
     } else {
       return NextResponse.json({ success: false, error: "Failed to add AnnualLeave" });
     }
-
-    // Revalidate path or perform any necessary logic
-    // revalidatePath("/api/AnnualLeave/list");
   } catch (err) {
     console.error("Error adding AnnualLeave:", err);
     return NextResponse.json({ success: false, error: "Failed to add AnnualLeave" }, { status: 500 });

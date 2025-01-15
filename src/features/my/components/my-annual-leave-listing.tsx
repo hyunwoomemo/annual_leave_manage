@@ -24,7 +24,7 @@ export default async function MyAnnualLeaveListing({ employee_id }: EmployeeList
   const totalEmployees = totalCount;
 
   return (
-    <div className="pt-10 w-2/3">
+    <div className="pt-10">
       <ProductTable columns={columns} data={data} totalItems={totalEmployees} />
     </div>
   );

@@ -2,13 +2,13 @@ import executeQuery from "@/lib/db";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  const { employee_id, password } = await req.json();
+  const { employee_num, password } = await req.json();
 
-  console.log("employee_id", employee_id, password);
+  console.log("employee_num", employee_num, password);
   try {
-    if (employee_id && password) {
-      const sql = "select * from employees where id = ? and password = ? and status > -1";
-      const values = [employee_id, password];
+    if (employee_num && password) {
+      const sql = "select * from employees where employee_num = ? and password = ? and status > -1";
+      const values = [employee_num, password];
 
       const [result] = await executeQuery(sql, values);
 

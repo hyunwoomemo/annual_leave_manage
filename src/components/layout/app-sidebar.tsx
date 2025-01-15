@@ -27,7 +27,7 @@ import * as React from "react";
 import { Icons } from "../icons";
 
 export const company = {
-  name: "Acme Inc",
+  name: "탈것",
   logo: GalleryVerticalEnd,
   plan: "Enterprise",
 };
@@ -91,6 +91,7 @@ export default function AppSidebar({ count }) {
                       <Link href={item.url}>
                         <Icon />
                         <span>{item.title}</span>
+                        {item.url === "/dashboard/annualleave" && <div className="text-[12px] w-6 h-6 flex items-center justify-center rounded-full bg-primary  not-sr-only">{count}</div>}
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

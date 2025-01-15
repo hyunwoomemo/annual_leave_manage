@@ -47,11 +47,11 @@ export async function GET(req: Request) {
     // 조건 연결
     if (conditions.length > 0) {
       const combinedConditions = `(${conditions.join(" OR ")})`;
-      countSql += ` WHERE ` + combinedConditions + ` AND ` + statusCondition;
-      dataSql += ` WHERE ` + combinedConditions + ` AND ` + statusCondition;
+      countSql += ` WHERE ` + combinedConditions + ` AND ` + statusCondition + " AND type < 11";
+      dataSql += ` WHERE ` + combinedConditions + ` AND ` + statusCondition + " AND type < 11";
     } else {
-      countSql += ` WHERE ` + statusCondition;
-      dataSql += ` WHERE ` + statusCondition;
+      countSql += ` WHERE ` + statusCondition + " AND type < 11";
+      dataSql += ` WHERE ` + statusCondition + " AND type < 11";
     }
 
     const countResult = await executeQuery(countSql, values);

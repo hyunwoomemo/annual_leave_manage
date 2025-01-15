@@ -11,17 +11,40 @@ export async function GET(req: Request) {
     const department = searchParams.get("department") !== "null" && searchParams.get("department") ? searchParams.get("department") : "";
 
     // 총 갯수 쿼리
-    let countSql = `SELECT COUNT(*) AS totalCount FROM employees where status > -1`;
+    let countSql = `SELECT COUNT(*) AS totalCount FROM employees`;
     let dataSql = `SELECT 
-    *,
-    CASE 
-        WHEN TIMESTAMPDIFF(YEAR, startDate, CURRENT_DATE()) = 0 THEN 
-            TIMESTAMPDIFF(MONTH, startDate, CURRENT_DATE())
-        ELSE 
-            TIMESTAMPDIFF(MONTH, startDate, CURRENT_DATE()) + 
-            FLOOR(TIMESTAMPDIFF(YEAR, startDate, CURRENT_DATE()) / 1) * 15 
-    END AS annual_leave_count
-FROM employees where status > -1`;
+    e.*,
+    (
+        SELECT 
+            SUM(
+                CASE 
+                    WHEN al.type = 1 THEN DATEDIFF(al.end_date, al.start_date) + 1 -- 연차는 날짜 차이를 계산
+                    WHEN al.type = 2 THEN 0.5 -- 반차는 0.5로 카운트
+                    WHEN al.type = 3 THEN 0.25 -- 반반차는 0.25로 카운트
+
+                    ELSE 0 -- 기타 타입은 0으로 처리
+                END
+            )
+        FROM annual_leave al 
+        WHERE al.status = 1 AND al.employee_id = e.id
+    ) AS use_leave_count,
+    (
+        CASE 
+            WHEN TIMESTAMPDIFF(YEAR, e.startDate, CURRENT_DATE()) = 0 THEN 
+                TIMESTAMPDIFF(MONTH, e.startDate, CURRENT_DATE())
+            ELSE 
+                TIMESTAMPDIFF(MONTH, e.startDate, CURRENT_DATE()) + 
+                FLOOR(TIMESTAMPDIFF(YEAR, e.startDate, CURRENT_DATE()) / 1) * 15 
+        END
+        +
+        (
+            SELECT 
+                IFNULL(SUM(al.given_number), 0)
+            FROM annual_leave al
+            WHERE al.employee_id = e.id AND al.status = 1
+        )
+    ) AS annual_leave_count
+FROM employees e`;
 
     let conditions = [];
     let values = [];
@@ -38,9 +61,15 @@ FROM employees where status > -1`;
     }
 
     if (conditions.length > 0) {
-      countSql += ` WHERE ` + conditions.join(" AND ");
-      dataSql += ` WHERE ` + conditions.join(" AND ");
+      const whereClause = ` WHERE ` + conditions.join(" AND ");
+      countSql += whereClause;
+      dataSql += whereClause;
     }
+
+    // `status > -1` 조건 추가
+    const statusCondition = `status > -1`;
+    countSql += conditions.length > 0 ? ` AND ${statusCondition}` : ` WHERE ${statusCondition}`;
+    dataSql += conditions.length > 0 ? ` AND ${statusCondition}` : ` WHERE ${statusCondition}`;
     dataSql += " order by created_at desc";
     dataSql += ` LIMIT ? OFFSET ?`;
     values.push(limit, (page - 1) * limit);

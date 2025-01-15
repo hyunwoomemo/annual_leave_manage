@@ -62,30 +62,34 @@ export const columns: ColumnDef<Product>[] = [
   // },
   {
     accessorKey: "use",
-    header: "사용",
+    header: "사용/지급",
     cell: ({ row }) => {
       switch (row.getValue("type")) {
         case 2:
-          return "0.5일";
+          return "-0.5일";
         case 3:
-          return "0.25일";
+          return "-0.25일";
+        case 11:
+          return `+${row.original.given_number}일`;
+        case 12:
+          return `${row.original.given_number}일`;
         default:
           const start = row.getValue("start_date");
           const end = row.original.end_date;
 
           const daysDifference = moment(end).diff(moment(start), "days");
 
-          return daysDifference + 1 + "일";
+          return <span>{-(daysDifference + 1) + "일"}</span>;
       }
     },
   },
-  {
-    accessorKey: "start_time",
-    header: "시간",
-    cell: ({ row }) => {
-      return row.getValue("start_time") ? moment(row.original.end_date).format("YYYY-MM-DD (dd)") : "";
-    },
-  },
+  // {
+  //   accessorKey: "start_time",
+  //   header: "시간",
+  //   cell: ({ row }) => {
+  //     return row.getValue("start_time") ? moment(row.original.end_date).format("YYYY-MM-DD (dd)") : "";
+  //   },
+  // },
   // {
   //   accessorKey: "created_at",
   //   header: "생성일",
@@ -108,6 +112,10 @@ export const columns: ColumnDef<Product>[] = [
           return "공가";
         case 5:
           return "경조 휴가";
+        case 11:
+          return "관리자 지급";
+        case 12:
+          return "관리자 차감";
       }
     },
   },

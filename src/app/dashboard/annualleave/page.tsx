@@ -38,7 +38,7 @@ export default async function Page(props: pageProps) {
     <PageContainer>
       <div className="space-y-4">
         <div className="flex items-start justify-between">
-          <Heading title="연차" description="Manage annualleave (Server side table functionalities.)" />
+          <Heading title="연차 신청 목록" description="" />
         </div>
         <Separator />
         <AnnualLeaveTableAction departments={departments} />

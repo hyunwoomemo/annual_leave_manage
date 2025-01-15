@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 import { CellAction } from "./cell-action";
 import moment from "moment";
+import Link from "next/link";
 
 export const columns: ColumnDef<Product>[] = [
   // {
@@ -25,6 +26,9 @@ export const columns: ColumnDef<Product>[] = [
   {
     accessorKey: "id",
     header: "사번",
+    cell: ({ row }) => {
+      return row.original.employee_num ? row.original.employee_num : row.getValue("id");
+    },
   },
   {
     accessorKey: "name",
@@ -65,9 +69,13 @@ export const columns: ColumnDef<Product>[] = [
   {
     accessorKey: "annual_leave_count",
     header: "연차 갯수",
-    // cell: ({ row }) => {
-    //   return row.getValue("annual_leave_count") ? moment(row.getValue("annual_leave_count")).format("YYYY-MM-DD") : "";
-    // },
+    cell: ({ row }) => {
+      return (
+        <Link className="hover:text-orange-400" href={`/dashboard/employee/${row.original.employee_num}/annualleave`}>
+          {row.getValue("annual_leave_count") - row.original.use_leave_count}
+        </Link>
+      );
+    },
   },
 
   {

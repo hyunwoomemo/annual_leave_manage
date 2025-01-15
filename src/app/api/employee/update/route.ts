@@ -1,4 +1,6 @@
+import { auth } from "@/lib/auth";
 import executeQuery from "@/lib/db";
+import { signOut } from "next-auth/react";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
@@ -34,7 +36,6 @@ export async function POST(request: Request) {
 
     // 데이터베이스 실행
     const result = await executeQuery(sql, values);
-
     if (result.affectedRows > 0) {
       revalidatePath("/dashboard/employee");
       return NextResponse.json({ success: true, message: "Employee updated successfully" }, { status: 200 });
@@ -42,7 +43,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "Failed to update Employee" }, { status: 400 });
     }
   } catch (err) {
-    console.error("Error updating employee:", err);
-    return NextResponse.json({ success: false, error: "Failed to update employee" }, { status: 500 });
+    console.error("Error updating employee:", err.code);
+
+    if (err.code === "ER_DUP_ENTRY") {
+      return NextResponse.json({ success: false, message: "이미 존재하는 사번입니다." }, { status: 500 });
+    } else {
+      return NextResponse.json({ success: false, message: "Failed to update employee" }, { status: 500 });
+    }
   }
 }

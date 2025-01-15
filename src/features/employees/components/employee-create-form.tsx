@@ -15,7 +15,8 @@ import moment from "moment";
 import { useAtomValue } from "jotai";
 import { selectedEmployee } from "@/store/employee/atom";
 import { E } from "@faker-js/faker/dist/airline-BnpeTvY9";
-const EmployeeCreateForm = ({ create, update }) => {
+import { signOut } from "next-auth/react";
+const EmployeeCreateForm = ({ create, update, session }) => {
   const [values, setValues] = useState({});
   const [updateValues, setupdateValues] = useState({});
   const route = useRouter();
@@ -24,6 +25,10 @@ const EmployeeCreateForm = ({ create, update }) => {
   useEffect(() => {
     if (update && employee) {
       setValues({ ...employee, startdate: "", birthdate: "" });
+    } else {
+      if (update && !employee) {
+        route.push("/dashboard/employee");
+      }
     }
   }, [employee]);
 
@@ -44,6 +49,10 @@ const EmployeeCreateForm = ({ create, update }) => {
   };
 
   const handleCreate = async () => {
+    if (!values.employee_num || !values.name) {
+      return toast.error("필수 입력값이 누락되었습니다.");
+    }
+
     const res = await create(values);
 
     console.log("create", res);
@@ -62,15 +71,25 @@ const EmployeeCreateForm = ({ create, update }) => {
     console.log("update", res);
 
     if (res.success) {
+      if (updateValues.employee_num && employee.id == session?.user?.id) {
+        toast.success("현재 로그인되어있는 유저의 사번이 변경되어 재로그인이 필요합니다.");
+        return signOut({
+          redirect: true,
+          redirectTo: "/",
+        });
+      }
       toast.success("직원이 수정되었습니다.");
       route.push("/dashboard/employee");
+    } else {
+      toast.error(res.message || "직원 수정에 실패했습니다.");
+      // route.push("/dashboard/employee");
     }
   };
 
   return (
     <div className="space-y-4">
       <div className="flex items-start justify-between">
-        <Heading title="Employee" description="Manage employee (Server side table functionalities.)" />
+        <Heading title="Employee" description="" />
         <Button onClick={update ? handleUpdate : handleCreate} className={cn(buttonVariants(), "text-xs md:text-sm")}>
           <Plus className="mr-2 h-4 w-4" /> {update ? "수정" : "직원 등록"}
         </Button>
@@ -79,23 +98,25 @@ const EmployeeCreateForm = ({ create, update }) => {
         <CardContent>
           <div className="flex gap-4">
             <div className="flex flex-col flex-1 gap-4 py-4 my-4">
-              <Label>이름</Label>
-              <Input defaultValue={values?.name} disabled={update ? true : false} onChange={(e) => handleInputChange("name", e.target.value)} placeholder="이름을 입력해주세요." />
+              <Label>사번</Label>
+              <Input defaultValue={values?.employee_num || values?.id} onChange={(e) => handleInputChange("employee_num", e.target.value)} placeholder="사번을 입력해주세요." />
             </div>
             <div className="flex flex-col flex-1 gap-4 py-4 my-4">
-              <Label>부서</Label>
-              <Input defaultValue={values?.department} onChange={(e) => handleInputChange("department", e.target.value)} placeholder="부서명을 입력해주세요." />
+              <Label>이름</Label>
+              <Input defaultValue={values?.name} disabled={update ? true : false} onChange={(e) => handleInputChange("name", e.target.value)} placeholder="이름을 입력해주세요." />
             </div>
           </div>
           <div className="flex gap-4">
             <div className="flex flex-col flex-1 gap-4 py-4 my-4">
+              <Label>부서</Label>
+              <Input defaultValue={values?.department} onChange={(e) => handleInputChange("department", e.target.value)} placeholder="부서명을 입력해주세요." />
+            </div>
+            <div className="flex flex-col flex-1 gap-4 py-4 my-4">
               <Label>핸드폰</Label>
               <Input defaultValue={values?.hp} onChange={(e) => handleInputChange("hp", e.target.value)} placeholder="핸드폰번호를 입력해주세요." />
             </div>
-            <div className="flex flex-col flex-1 gap-4 py-4 my-4">
-              {/* <Label>핸드폰</Label>
-            <Input onChange={(e) => handleInputChange("hp", e.target.value)} placeholder="이름을 입력해주세요." /> */}
-            </div>
+            {/* <div className="flex flex-col flex-1 gap-4 py-4 my-4">
+            </div> */}
           </div>
           <div className="flex gap-4">
             <div className="flex flex-col flex-1 gap-4 py-4 my-4">

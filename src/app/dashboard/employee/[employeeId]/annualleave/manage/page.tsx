@@ -1,13 +1,15 @@
 import PageContainer from "@/components/layout/page-container";
 import AnnualLeaveCreateForm from "@/features/annualleave/components/annualleave-create-form";
+import AnnualLeaveManageForm from "@/features/annualleave/components/annualleave-manage-form";
 import { auth } from "@/lib/auth";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-export default async function AnnualCreateViewPage() {
-  const session = await auth();
-  console.log("123123", session);
+export default async function AnnualManageViewPage(props) {
+  console.log("props", props.params);
+  const employee_num = await props.params.employeeId;
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/employee/info/${session?.user?.employee_num}`);
+  console.log("employee_numemployee_num", employee_num);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/employee/info/${employee_num}`);
   const json = await res.json();
 
   console.log("kjkjj", json);
@@ -25,7 +27,6 @@ export default async function AnnualCreateViewPage() {
 
     if (json.success) {
       revalidatePath("/dashboard/calendar");
-
       // redirect("/dashboard/calendar");
 
       // setTimeout(() => {
@@ -38,7 +39,8 @@ export default async function AnnualCreateViewPage() {
   return (
     <PageContainer>
       <div className="space-y-4">
-        <AnnualLeaveCreateForm employee={json} categories={[]} initialData={null} create={create} />
+        {/* <AnnualLeaveCreateForm employee={json} categories={[]} initialData={null} create={create} /> */}
+        <AnnualLeaveManageForm create={create} employee={json} />
       </div>
     </PageContainer>
   );

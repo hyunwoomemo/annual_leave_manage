@@ -8,7 +8,7 @@ export async function POST(request: Request) {
   try {
     const data = await request.json(); // Parse the incoming JSON data
 
-    const { name, department, hp, birthDate, startDate } = data;
+    const { employee_num, name, department, hp, birthDate, startDate } = data;
 
     // Here, you would typically insert the data into your database
     // For example, using Prisma or directly with SQL queries:
@@ -16,8 +16,8 @@ export async function POST(request: Request) {
     //   data: { name, department, hp, birthDate, startDate },
     // });
 
-    const existingSql = "select count(id) as count from employees where name = ? and birthdate = ? and > status > -1";
-    const existingValues = [name, birthDate];
+    const existingSql = "select count(id) as count from employees where (name = ? and birthdate = ? and status > -1 or employee_num = ?)";
+    const existingValues = [name, birthDate, employee_num];
 
     console.log("123123", existingSql, existingValues);
 
@@ -26,11 +26,11 @@ export async function POST(request: Request) {
     console.log("eeeee", count);
 
     if (count > 0) {
-      return NextResponse.json({ success: false, message: "이미 존재하는 직원입니다." }, { status: 200 });
+      return NextResponse.json({ success: false, message: "사번이 중복되었거나 이미 존재하는 직원입니다." }, { status: 200 });
     }
 
-    const sql = "insert into employees (name, department,hp,birthDate, startDate, password) values (?,?,?,?,?,?)";
-    const values = [name, department, hp, birthDate, startDate, moment(birthDate).format("YYMMDD")];
+    const sql = "insert into employees (name, department,hp,birthDate, startDate, password, employee_num) values (?,?,?,?,?,?, ?)";
+    const values = [name, department, hp, birthDate, startDate, moment(birthDate).format("YYMMDD"), employee_num];
 
     const rows = await executeQuery(sql, values);
 
@@ -42,6 +42,6 @@ export async function POST(request: Request) {
     }
   } catch (err) {
     console.error("Error adding employee:", err);
-    return NextResponse.json({ success: false, error: "Failed to add employee" }, { status: 500 });
+    return NextResponse.json({ success: false, message: "Failed to add employee" }, { status: 500 });
   }
 }

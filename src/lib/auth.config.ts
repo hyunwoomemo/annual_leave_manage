@@ -14,19 +14,19 @@ const authConfig = {
     }),
     CredentialProvider({
       credentials: {
-        employee_id: {
-          type: "employee_id",
+        employee_num: {
+          type: "employee_num",
         },
         password: {
           type: "password",
         },
       },
       async authorize(credentials, req) {
-        const { employee_id, password } = credentials;
+        const { employee_num, password } = credentials;
 
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
           method: "POST",
-          body: JSON.stringify({ employee_id, password }),
+          body: JSON.stringify({ employee_num, password }),
         });
 
         const data = await res.json();
@@ -50,6 +50,7 @@ const authConfig = {
             id: data.data.id,
             name: data.data.name,
             isAdmin: data.data.is_admin === 1, // 관리자 여부
+            employee_num: data.data.employee_num,
           };
         } else {
           const credentialsSignin = new CredentialsSignin();
@@ -70,6 +71,7 @@ const authConfig = {
       if (token) {
         session.user.isAdmin = token.isAdmin;
         session.user.id = token.id;
+        session.user.employee_num = token.employee_num;
       }
       return session;
     },
@@ -78,6 +80,7 @@ const authConfig = {
       if (user) {
         token.isAdmin = user.isAdmin;
         token.id = user.id;
+        token.employee_num = user.employee_num;
       }
       return token;
     },

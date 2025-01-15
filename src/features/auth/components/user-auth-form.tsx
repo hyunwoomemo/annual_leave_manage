@@ -12,7 +12,7 @@ import * as z from "zod";
 import GithubSignInButton from "./github-auth-button";
 
 const formSchema = z.object({
-  employee_id: z.any(),
+  employee_num: z.any(),
   // email: z.string().email({ message: "Enter a valid email address" }),
   password: z.any(),
 });
@@ -41,7 +41,7 @@ export default function UserAuthForm() {
   const onSubmit = async (data: UserFormValue) => {
     try {
       const res = await signIn("credentials", {
-        employee_id: data.employee_id,
+        employee_num: data.employee_num,
         password: data.password,
         redirect: false, // redirect를 수동으로 처리
       });
@@ -78,7 +78,7 @@ export default function UserAuthForm() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-2">
           <FormField
             control={form.control}
-            name="employee_id"
+            name="employee_num"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>사번</FormLabel>

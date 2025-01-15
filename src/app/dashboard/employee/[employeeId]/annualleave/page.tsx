@@ -14,20 +14,21 @@ const page = async (props) => {
   // Allow nested RSCs to access the search params (in a type-safe way)
   searchParamsCache.parse(searchParams);
 
+  const employeeId = await props.params.employeeId;
+  console.log("propsprops", employeeId);
+
   const session = await auth();
 
-  console.log("sessionsession", session);
-
-  const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/employee/info/${session?.user?.employee_num}`);
+  const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/employee/info/${employeeId}`);
   const json = await data.json();
 
   console.log("json", json);
 
   return (
     <PageContainer>
-      <MyAnnualLeaveViewPage data={json} />
+      <MyAnnualLeaveViewPage data={json} manage />
       {/* <Separator /> */}
-      <MyAnnualLeaveListing employee_id={session?.user?.id} />
+      <MyAnnualLeaveListing employee_id={json.id} />
     </PageContainer>
   );
 };

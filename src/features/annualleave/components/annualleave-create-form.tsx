@@ -36,7 +36,7 @@ const AnnualLeaveCreateForm: React.FC<AnnualLeaveFormType> = ({ initialData, cat
   const [loading, setLoading] = useState(false);
   const [imgLoading, setImgLoading] = useState(false);
   const title = initialData ? "Edit product" : "연차 신청";
-  const description = initialData ? "Edit a product." : "To create your resume, we first need some basic information about you.";
+  // const description = initialData ? "Edit a product." : "To create your resume, we first need some basic information about you.";
   const toastMessage = initialData ? "Product updated." : "Product created.";
   const action = initialData ? "Save changes" : "Create";
   const [previousStep, setPreviousStep] = useState(0);
@@ -189,19 +189,16 @@ const AnnualLeaveCreateForm: React.FC<AnnualLeaveFormType> = ({ initialData, cat
   return (
     <>
       <div className="flex items-center justify-between">
-        <Heading title={title} description={description} />
-        {/* {initialData && (
-        
-          <Button disabled={loading} variant="destructive" size="sm" onClick={() => setOpen(true)}>
-            <Trash className="h-4 w-4" />
-          </Button>
-        )} */}
+        <Heading title={title} />
+        <Button onClick={handleCreate} className={cn(buttonVariants(), "text-xs md:text-sm")} type="submit">
+          <Plus className="mr-2 h-4 w-4" /> 완료
+        </Button>
       </div>
       {/* <Separator /> */}
 
       <Separator />
       <Form {...form}>
-        <form onSubmit={handleCreate} className="w-full space-y-8">
+        <form className="w-full space-y-8">
           <div className={cn(currentStep === 1 ? "w-full md:inline-block" : "gap-8 md:grid md:grid-cols-1")}>
             {currentStep === 0 && (
               <>
@@ -409,9 +406,6 @@ const AnnualLeaveCreateForm: React.FC<AnnualLeaveFormType> = ({ initialData, cat
               </>
             )}
           </div>
-          <Button className={cn(buttonVariants(), "text-xs md:text-sm")} type="submit">
-            <Plus className="mr-2 h-4 w-4" /> 직원 등록
-          </Button>
         </form>
       </Form>
       {/* Navigation */}

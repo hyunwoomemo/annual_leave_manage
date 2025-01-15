@@ -6,17 +6,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RecentSales } from "@/features/overview/components/recent-sales";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Edit, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const MyAnnualLeaveViewPage = ({ data }) => {
+const MyAnnualLeaveViewPage = ({ data, manage }) => {
+  console.log("datadatadata", data);
+
   return (
     <div className="space-y-4">
       <div className="flex items-start justify-between">
-        <Heading title="나의 연차" description="Manage annualleave (Server side table functionalities.)" />
-        <Link href="/dashboard/annualleave/create" className={cn(buttonVariants(), "text-xs md:text-sm")}>
-          <Plus className="mr-2 h-4 w-4" /> 연차 신청
-        </Link>
+        <Heading title={`${data.name} 연차 내역`} description="" />
+        {manage ? (
+          <Link href={`/dashboard/employee/${data.employee_num}/annualleave/manage`} className={cn(buttonVariants(), "text-xs md:text-sm")}>
+            <Edit className="mr-2 h-4 w-4" /> 연차 관리
+          </Link>
+        ) : (
+          <Link href={`/dashboard/annualleave/create`} className={cn(buttonVariants(), "text-xs md:text-sm")}>
+            <Plus className="mr-2 h-4 w-4" /> 연차 신청
+          </Link>
+        )}
       </div>
       <Separator />
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -60,7 +68,7 @@ const MyAnnualLeaveViewPage = ({ data }) => {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data.use_leave_count || 0}</div>
+            <div className="text-2xl font-bold">{data.use_leave_count ? Number(data.use_leave_count).toFixed(1) : 0}</div>
             {/* <p className="text-xs text-muted-foreground">+180.1% from last month</p> */}
           </CardContent>
         </Card>

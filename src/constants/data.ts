@@ -32,27 +32,27 @@ export const navItems: NavItem[] = [
     admin: true,
   },
   {
-    title: "연차",
-    url: "/#",
+    title: "연차 신청 목록",
+    url: "/dashboard/annualleave",
     icon: "post",
     shortcut: ["p", "p"],
-    isActive: true,
+    isActive: false,
     admin: true,
-    items: [
-      {
-        title: "목록",
-        url: "/dashboard/annualleave",
-        icon: "product",
-        shortcut: ["m", "m"],
-        admin: true,
-      },
-      // {
-      //   title: "달력",
-      //   shortcut: ["l", "l"],
-      //   url: "/dashboard/calendar",
-      //   icon: "check",
-      // },
-    ], // No child items
+    // items: [
+    //   {
+    //     title: "목록",
+    //     url: "/dashboard/annualleave",
+    //     icon: "product",
+    //     shortcut: ["m", "m"],
+    //     admin: true,
+    //   },
+    //   // {
+    //   //   title: "달력",
+    //   //   shortcut: ["l", "l"],
+    //   //   url: "/dashboard/calendar",
+    //   //   icon: "check",
+    //   // },
+    // ], // No child items
   },
   {
     title: "마이페이지",
