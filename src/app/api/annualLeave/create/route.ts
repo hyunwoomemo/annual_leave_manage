@@ -79,7 +79,13 @@ export async function POST(request: Request) {
           },
         });
         const json = await res.json();
-        console.log("jjjj", json);
+
+        const messageId = json.result?.message_id;
+
+        // 기존 텍스트와 messageId 저장
+        const saveResult = await executeQuery("UPDATE annual_leave SET message_id = ?, message_text = ? WHERE id = ?", [messageId, text, result.insertId]);
+
+        console.log("saveResultsaveResult", saveResult);
       }
 
       return NextResponse.json({ success: true, error: "Success to add AnnualLeave" });

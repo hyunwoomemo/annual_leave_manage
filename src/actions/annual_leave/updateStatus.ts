@@ -8,7 +8,7 @@ export const updateStatus = async (row, status) => {
     headers: {
       "Content-Type": "application/json", // Content-Type 추가
     },
-    body: JSON.stringify({ id: row.original.id, status }),
+    body: JSON.stringify({ id: row.original.id, status, name: row.original.name }),
   });
 
   const json = await res.json();
