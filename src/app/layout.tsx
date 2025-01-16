@@ -1,6 +1,6 @@
 import Providers from "@/components/layout/providers";
 import { Toaster } from "@/components/ui/sonner";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Lato } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
@@ -11,6 +11,11 @@ import { redirect } from "next/navigation";
 export const metadata: Metadata = {
   title: "Next Shadcn",
   description: "Basic dashboard with Next.js and Shadcn",
+};
+
+export const viewport: Viewport = {
+  initialScale: 1,
+  width: "device-width",
 };
 
 const lato = Lato({
