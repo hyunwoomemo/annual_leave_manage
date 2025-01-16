@@ -138,6 +138,11 @@
   /* border-radius: 10 10 0; */
   background: #fff;
 }
+
+.dayheader-transparent {
+  background: transparent !important;
+}
+
 .fullcalendar {
   border-radius: 10 10 10 10;
 }

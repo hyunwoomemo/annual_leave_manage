@@ -91,7 +91,7 @@ export default function Calendar({ data, totalCount }) {
         // selectable
         // dayHeaderContent={(arg) => <div className={`${}`}>{arg.text}</div>}
 
-        dayHeaderClassNames={theme === "dark" ? "dayheader-dark" : "dayheader-light"}
+        dayHeaderClassNames={theme === "dark" ? "dayheader-dark" : theme === "light" ? "dayheader-light" : "transparent"}
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
         datesSet={handleDatesSet}
