@@ -27,7 +27,7 @@ import * as React from "react";
 import { Icons } from "../icons";
 
 export const company = {
-  name: "탈것",
+  name: "스텝업",
   logo: GalleryVerticalEnd,
   plan: "Enterprise",
 };

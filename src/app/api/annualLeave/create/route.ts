@@ -46,8 +46,8 @@ export async function POST(request: Request) {
       const daysDifference = moment(end_date || start_date).diff(moment(start_date), "days");
       console.log(";tttt", type, type2, daysDifference, end_date, start_date);
 
-      if (type === 3) {
-        dateText = `${moment(start_date).format("YYYY-MM-DD HH:mm")} ~ (${moment(end_date).format("HH:mm")})`;
+      if (type == 3) {
+        dateText = `${moment(start_date).format("YYYY-MM-DD HH:mm")}~${moment(end_date).format("HH:mm")}`;
       } else {
         if (daysDifference === 0) {
           dateText = moment(start_date).format("YYYY-MM-DD");
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
         }
       }
 
-      const text = `(링크) \n${name}님이 연차를 신청했습니다. \n\n 종류: ${typeText} \n 날짜: ${dateText}`;
+      const text = `(링크) \n\n${name}님이 연차를 신청했습니다. \n\n 종류: ${typeText} \n 날짜: ${dateText}`;
       console.log("jjjj", process.env.BOT_ID, process.env.CHANNEL_ID, text);
       if (type < 11) {
         const res = await fetch(`https://api.telegram.org/${process.env.BOT_ID}/sendMessage`, {
