@@ -18,6 +18,7 @@ export const viewport: Viewport = {
   width: "device-width",
   maximumScale: 1,
   userScalable: false,
+  themeColor: "#fff",
 };
 
 const lato = Lato({
