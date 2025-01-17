@@ -1,9 +1,0 @@
-{
-  "short_name": "스텝업",
-  "name": "스텝업",
-  "description": "manage annual_leave",
-  "start_url": "/",
-  "display": "standalone",
-  "theme_color": "#fff",
-  "background_color": "#fff"
-}

@@ -8,10 +8,9 @@ import "./globals.css";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Next Shadcn",
-  description: "Basic dashboard with Next.js and Shadcn",
-};
+// export const metadata: Metadata = {
+
+// };
 
 export const viewport: Viewport = {
   initialScale: 1,
@@ -26,6 +25,21 @@ const lato = Lato({
   weight: ["400", "700", "900"],
   display: "swap",
 });
+
+export async function generateMetadata({ params }) {
+  return {
+    manifest: "/manifest.webmanifest",
+    applicationName: "Stepup",
+    appleWebApp: {
+      capable: true,
+      title: "Stepup",
+      statusBarStyle: "default",
+    },
+    title: "Next Shadcn",
+
+    description: "Basic dashboard with Next.js and Shadcn",
+  };
+}
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
