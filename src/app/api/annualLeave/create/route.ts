@@ -56,7 +56,7 @@ export async function POST(request: Request) {
         }
       }
 
-      const text = `(링크) \n\n${name}님이 연차를 신청했습니다. \n\n 종류: ${typeText} \n 날짜: ${dateText}`;
+      const text = `(스텝업 연차관리) \n\n${name}님이 연차를 신청했습니다. \n\n 종류: ${typeText} \n 날짜: ${dateText}`;
       console.log("jjjj", process.env.BOT_ID, process.env.CHANNEL_ID, text);
       if (type < 11) {
         const res = await fetch(`https://api.telegram.org/${process.env.BOT_ID}/sendMessage`, {

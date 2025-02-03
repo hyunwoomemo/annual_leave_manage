@@ -70,12 +70,14 @@ FROM employees e`;
     const statusCondition = `status > -1`;
     countSql += conditions.length > 0 ? ` AND ${statusCondition}` : ` WHERE ${statusCondition}`;
     dataSql += conditions.length > 0 ? ` AND ${statusCondition}` : ` WHERE ${statusCondition}`;
-    dataSql += " order by created_at desc";
+    dataSql += " order by e.employee_num asc ";
     dataSql += ` LIMIT ? OFFSET ?`;
     values.push(limit, (page - 1) * limit);
 
     const countResult = await executeQuery(countSql, values);
     const result = await executeQuery(dataSql, values);
+
+    console.log("dataSqldataSql", dataSql);
 
     // const json = await result.json();
     // console.log("Employee List Response:", json);

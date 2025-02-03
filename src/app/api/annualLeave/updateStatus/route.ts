@@ -1,4 +1,5 @@
 // app/api/annualLeave/create/route.ts
+import { auth } from "@/lib/auth";
 import executeQuery from "@/lib/db";
 import moment from "moment";
 import { revalidatePath, revalidateTag } from "next/cache";
@@ -8,9 +9,12 @@ export async function POST(request: Request) {
   try {
     const data = await request.json(); // Parse the incoming JSON data
 
+    const session = await auth();
+    const adminId = session?.user?.id;
+
     const { id, status, name } = data;
 
-    console.log("Received data:", data);
+    console.log("Received data:", session);
 
     const sql = `update annual_leave set status = ? where id = ?`;
     const values = [status, id];
@@ -28,6 +32,11 @@ export async function POST(request: Request) {
       }
 
       const { message_id: messageId, message_text: messageText } = result[0];
+
+      const adminName = await executeQuery("SELECT name FROM employees WHERE employee_num = ?", [adminId]);
+
+      console.log("adminId", adminId);
+      console.log("adminNameadminName", adminName);
 
       // 첫 줄 (링크) 제거
       const updatedText = messageText
