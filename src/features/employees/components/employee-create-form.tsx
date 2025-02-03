@@ -33,7 +33,26 @@ const EmployeeCreateForm = ({ create, update, session }) => {
   }, [employee]);
 
   const handleInputChange = (type, text) => {
+    if (type === "personalId") {
+      // 숫자만 허용하고 하이픈 제외
+      text = text.replace(/[^0-9]/g, "");
+
+      // 입력 길이 제한 (13자리)
+      if (text.length > 14) {
+        text = text.slice(0, 13);
+      }
+
+      // 6자리 입력 시 자동으로 하이픈 추가
+      if (text.length > 6) {
+        text = text.slice(0, 6) + "-" + text.slice(6);
+      }
+    }
+
+    console.log(text);
+
     if (update) {
+      setValues((prev) => ({ ...prev, [type]: text }));
+
       setupdateValues((prev) => ({ ...prev, [type]: text }));
     } else {
       setValues((prev) => ({ ...prev, [type]: text }));
@@ -49,7 +68,7 @@ const EmployeeCreateForm = ({ create, update, session }) => {
   };
 
   const handleCreate = async () => {
-    if (!values.employee_num || !values.name) {
+    if (!values.employee_num || !values.name || !values.birthDate || !values.startDate || !values.department || !values.hp) {
       return toast.error("필수 입력값이 누락되었습니다.");
     }
 
@@ -119,6 +138,17 @@ const EmployeeCreateForm = ({ create, update, session }) => {
             </div> */}
           </div>
           <div className="flex gap-4">
+            <div className="flex flex-col flex-1 gap-4 py-4 my-4">
+              <Label>주민번호</Label>
+              <Input
+                maxLength={14}
+                value={values?.personalId}
+                defaultValue={values?.personalId}
+                onChange={(e) => handleInputChange("personalId", e.target.value, e)}
+                placeholder="주민번호를 입력해주세요."
+                onBlur={(e) => values.personalId.length < 14 && toast.error("주민번호를 정확히 입력해주세요.")}
+              />
+            </div>
             <div className="flex flex-col flex-1 gap-4 py-4 my-4">
               <Label>생년월일</Label>
               {/* <Input placeholder="생년월일을 입력해주세요." /> */}

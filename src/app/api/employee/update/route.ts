@@ -20,6 +20,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "No fields to update" }, { status: 400 });
     }
 
+    // 주민번호 암호화
+    // if (personalId) {
+    //   updateFields.personalId = encrypt(personalId);
+    // }
+
     // 동적 쿼리 생성
     const columns = Object.keys(updateFields);
     const values = Object.values(updateFields);

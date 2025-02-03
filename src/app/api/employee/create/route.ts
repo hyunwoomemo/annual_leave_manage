@@ -8,7 +8,7 @@ export async function POST(request: Request) {
   try {
     const data = await request.json(); // Parse the incoming JSON data
 
-    const { employee_num, name, department, hp, birthDate, startDate } = data;
+    const { employee_num, name, department, hp, birthDate, startDate, personalId } = data;
 
     // Here, you would typically insert the data into your database
     // For example, using Prisma or directly with SQL queries:
@@ -29,8 +29,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "사번이 중복되었거나 이미 존재하는 직원입니다." }, { status: 200 });
     }
 
-    const sql = "insert into employees (name, department,hp,birthDate, startDate, password, employee_num) values (?,?,?,?,?,?, ?)";
-    const values = [name, department, hp, birthDate, startDate, moment(birthDate).format("YYMMDD"), employee_num];
+    const sql = "insert into employees (name, department,hp,birthDate, startDate, password, employee_num, personalId) values (?,?,?,?,?,?, ?, ?)";
+    const values = [name, department, hp, birthDate, startDate, moment(birthDate).format("YYMMDD"), employee_num, personalId];
 
     const rows = await executeQuery(sql, values);
 

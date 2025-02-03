@@ -23,9 +23,11 @@ export default async function MyAnnualLeaveListing({ employee_id }: EmployeeList
   // const data = await fakeProducts.getProducts(filters);
   const totalEmployees = totalCount;
 
+  console.log("ddd", data);
+
   return (
     <div className="pt-10">
-      <ProductTable columns={columns} data={data} totalItems={totalEmployees} />
+      <ProductTable columns={columns} data={data.filter((v) => v.init !== 1)} totalItems={totalEmployees} />
     </div>
   );
 }
