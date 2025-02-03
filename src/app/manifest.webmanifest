@@ -3,7 +3,9 @@
   "background_color": "#ffffff",
   "icons": [
     { "purpose": "maskable", "sizes": "512x512", "src": "./images/icon512_maskable.png", "type": "image/png" },
-    { "purpose": "any", "sizes": "512x512", "src": "./images/icon512_rounded.png", "type": "image/png" }
+    { "purpose": "any", "sizes": "512x512", "src": "./images/icon512_rounded.png", "type": "image/png" },
+    { "purpose": "maskable", "sizes": "192x192", "src": "./images/icon512_maskable.png", "type": "image/png" },
+    { "purpose": "any", "sizes": "192x192", "src": "./images/icon512_rounded.png", "type": "image/png" }
   ],
   "orientation": "portrait",
   "display": "standalone",
@@ -11,5 +13,5 @@
   "lang": "ko-KR",
   "name": "stepup",
   "short_name": "스텝업",
-  "start_url": "https://www.annual-leave-manage.vercel.app/"
+  "start_url": "/"
 }
