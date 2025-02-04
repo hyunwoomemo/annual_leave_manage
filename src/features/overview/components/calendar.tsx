@@ -48,7 +48,8 @@ export default function Calendar({ data, totalCount }) {
     if (data) {
       const events = data.map((item) => {
         console.log("ite", item);
-        const type = item.type === 1 ? "연차" : item.type === 2 ? (item.type2 === 1 ? "오전 반차" : "오후 반차") : item.type === 3 ? "공가" : item.type === 4 ? "경조 휴가" : "휴가";
+        const type =
+          item.type === 1 ? "연차" : item.type === 2 ? (item.type2 === 1 ? "오전 반차" : "오후 반차") : item.type === 3 ? "반반차" : item.type === 4 ? "공가" : item.type === 5 ? "경조 휴가" : "휴가";
         return {
           id: item.id,
           title: `${item.name} (${type})`, // 표시할 제목
