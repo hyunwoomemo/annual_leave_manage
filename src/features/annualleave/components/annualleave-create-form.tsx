@@ -236,7 +236,7 @@ const AnnualLeaveCreateForm: React.FC<AnnualLeaveFormType> = ({ initialData, cat
                     <FormItem>
                       <FormLabel>연차 남은 갯수</FormLabel>
                       <FormControl>
-                        <Input disabled={true} placeholder="johndoe@gmail.com" {...field} value={employee.annual_leave_count} />
+                        <Input disabled={true} placeholder="johndoe@gmail.com" {...field} value={employee.annual_leave_count - employee.use_leave_count} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
