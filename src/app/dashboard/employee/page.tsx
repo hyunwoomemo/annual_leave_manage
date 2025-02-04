@@ -13,7 +13,7 @@ import ProductListingPage from "@/features/employees/components/employee-listing
 import ProductTableAction from "@/features/employees/components/employee-tables/employee-table-action";
 
 export const metadata = {
-  title: "Dashboard: Employee",
+  title: "스텝업 연차 관리: Employee",
 };
 
 type pageProps = {
