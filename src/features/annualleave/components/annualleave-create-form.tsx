@@ -351,7 +351,7 @@ const AnnualLeaveCreateForm: React.FC<AnnualLeaveFormType> = ({ initialData, cat
                               onChange={(e) => {
                                 console.log("Date selected:", e);
                                 form.setValue("start_date", moment(form.watch("start_date")).format(`YYYY-MM-DD ${e?.hour}:${e?.minute}`));
-                                form.setValue("end_date", moment(form.watch("start_date")).format(`YYYY-MM-DD ${Number(e?.hour) + 4}:${e?.minute}`));
+                                form.setValue("end_date", moment(form.watch("start_date")).format(`YYYY-MM-DD ${Number(e?.hour) + 2}:${e?.minute}`));
                               }}
                             />
                           </FormControl>
