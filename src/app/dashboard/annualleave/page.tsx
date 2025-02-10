@@ -13,7 +13,7 @@ import AnnualLeaveListingPage from "@/features/annualleave/components/annualleav
 import AnnualLeaveTableAction from "@/features/annualleave/components/annualleave-tables/annualleave-table-action";
 
 export const metadata = {
-  title: "스텝업 연차 관리: Annualleave",
+  title: "연차 관리: Annualleave",
 };
 
 type pageProps = {

@@ -6,8 +6,8 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
-  title: "스텝업 연차 관리",
-  description: "스텝업 연차 관리",
+  title: "연차 관리",
+  description: "연차 관리",
 };
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {

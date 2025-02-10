@@ -4,8 +4,8 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "스텝업 연차 관리 | Sign In",
-  description: "스텝업 연차 관리",
+  title: "연차 관리 | Sign In",
+  description: "연차 관리",
 };
 
 export default async function Page() {

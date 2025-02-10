@@ -7,7 +7,7 @@ import { headers } from "next/headers";
 import { Suspense } from "react";
 
 export const metadata = {
-  title: "스텝업 연차 관리 : Overview",
+  title: "연차 관리 : Overview",
 };
 
 export default async function page(props) {

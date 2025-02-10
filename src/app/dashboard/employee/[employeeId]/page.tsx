@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import ProductViewPage from "@/features/employees/components/employee-view-page";
 
 export const metadata = {
-  title: "스텝업 연차 관리 : Product View",
+  title: "연차 관리 : Product View",
 };
 
 type PageProps = { params: Promise<{ productId: string }> };
