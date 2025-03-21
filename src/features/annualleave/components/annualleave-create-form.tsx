@@ -44,7 +44,7 @@ const AnnualLeaveCreateForm: React.FC<AnnualLeaveFormType> = ({ initialData, cat
   const [data, setData] = useState({});
 
   // console.log("ddd", data);
-  // const delta = currentStep - previousStep;
+  // const delta = curretntStep - previousStep;
 
   const defaultValues = {};
 

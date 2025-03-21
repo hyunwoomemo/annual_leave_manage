@@ -12,37 +12,60 @@ export async function GET(req: Request, { params }) {
     const sql = `SELECT 
     e.*,
     (
+        -- 사용 연차 계산 (주말 제외)
         SELECT 
             SUM(
                 CASE 
-                    WHEN al.type = 1 THEN DATEDIFF(al.end_date, al.start_date) + 1 -- 연차는 날짜 차이를 계산
-                    WHEN al.type = 2 THEN 0.5 -- 반차는 0.5로 카운트
-                    WHEN al.type = 3 THEN 0.25 -- 반반차는 0.25로 카운트
-
-                    ELSE 0 -- 기타 타입은 0으로 처리
+                    WHEN al.type = 1 THEN 
+                        ABS(DATEDIFF(al.end_date, al.start_date)) + 1
+                        - ABS(DATEDIFF(
+                            ADDDATE(al.end_date, INTERVAL 1 - DAYOFWEEK(al.end_date) DAY),
+                            ADDDATE(al.start_date, INTERVAL 1 - DAYOFWEEK(al.start_date) DAY)
+                        )) / 7 * 2
+                        - (DAYOFWEEK(al.start_date) = 7) -- 시작일이 토요일이면 -1
+                        - (DAYOFWEEK(al.end_date) = 1)   -- 종료일이 일요일이면 -1
+                    WHEN al.type = 2 THEN 0.5
+                    WHEN al.type = 3 THEN 0.25
+                    ELSE 0
                 END
             )
         FROM annual_leave al 
         WHERE al.status = 1 AND al.employee_id = e.id
     ) AS use_leave_count,
-    (
-        CASE 
-            WHEN TIMESTAMPDIFF(YEAR, e.startDate, CURRENT_DATE()) = 0 THEN 
-                TIMESTAMPDIFF(MONTH, e.startDate, CURRENT_DATE())
-            ELSE 
-                TIMESTAMPDIFF(MONTH, e.startDate, CURRENT_DATE()) + 
-                FLOOR(TIMESTAMPDIFF(YEAR, e.startDate, CURRENT_DATE()) / 1) * 15 
-        END
-        +
-        (
-            SELECT 
-                IFNULL(SUM(al.given_number), 0)
-            FROM annual_leave al
-            WHERE al.employee_id = e.id AND al.status = 1
-        )
-    ) AS annual_leave_count
-FROM employees e
-WHERE e.employee_num = ?;
+
+  (
+    -- 1년 이상 근무한 경우 (2025년 1월 1일 기준)
+    CASE
+        WHEN DATEDIFF(CURRENT_DATE(), '2025-01-01') >= 365 THEN
+            -- 매년 1월 1일 15개 지급 (1년 이상 근무자)
+            15
+        ELSE 0
+    END
+    +
+    -- 1년 미만 근무한 경우 (입사일에 따른 연차 지급)
+    CASE
+        WHEN DATEDIFF(CURRENT_DATE(), e.startDate) < 365 AND DATEDIFF(CURRENT_DATE(), '2025-01-01') >= 0 THEN
+            -- 2025년 1월 1일부터 매월 1개씩 발생
+            TIMESTAMPDIFF(MONTH, '2025-01-01', CURRENT_DATE())
+        ELSE 0
+    END
+    +
+    -- 입사 첫해 연차: 입사일 기준 1년이 되는 날 연차 지급 (입사 재직일 ÷ 365 * 15)
+    CASE
+        WHEN DATEDIFF(CURRENT_DATE(), e.startDate) >= 365 THEN
+            FLOOR(
+                (DATEDIFF(e.startDate + INTERVAL 1 YEAR, e.startDate) / 365) * 15
+            )
+        ELSE 0
+    END
+    +
+    -- 매년 1월 1일 추가 지급: 1년 이상 근무한 경우 15개 지급
+    CASE 
+        WHEN YEAR(CURRENT_DATE()) > 2025 AND DATEDIFF(CURRENT_DATE(), e.startDate) >= 365 THEN 15
+        ELSE 0
+    END
+) AS annual_leave_count
+FROM employees e WHERE e.employee_num = ?;
 `;
     const values = [employeeId];
     console.log("ss", sql, values);

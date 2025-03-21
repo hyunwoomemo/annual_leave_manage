@@ -4,46 +4,69 @@ import { NextResponse } from "next/server";
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get("page")) || 1; // Default to page 1
-    const limit = parseInt(searchParams.get("limit")) || 10; // Default to 10 items per page
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const limit = parseInt(searchParams.get("limit") || "10", 10);
     const search = searchParams.get("search") !== "null" && searchParams.get("search") ? searchParams.get("search") : "";
-
     const department = searchParams.get("department") !== "null" && searchParams.get("department") ? searchParams.get("department") : "";
 
     // 총 갯수 쿼리
-    let countSql = `SELECT COUNT(*) AS totalCount FROM employees`;
+    let countSql = `SELECT COUNT(*) AS totalCount FROM employees e`;
     let dataSql = `SELECT 
     e.*,
     (
+        -- 사용 연차 계산 (주말 제외)
         SELECT 
             SUM(
                 CASE 
-                    WHEN al.type = 1 THEN DATEDIFF(al.end_date, al.start_date) + 1 -- 연차는 날짜 차이를 계산
-                    WHEN al.type = 2 THEN 0.5 -- 반차는 0.5로 카운트
-                    WHEN al.type = 3 THEN 0.25 -- 반반차는 0.25로 카운트
-
-                    ELSE 0 -- 기타 타입은 0으로 처리
+                    WHEN al.type = 1 THEN 
+                        ABS(DATEDIFF(al.end_date, al.start_date)) + 1
+                        - ABS(DATEDIFF(
+                            ADDDATE(al.end_date, INTERVAL 1 - DAYOFWEEK(al.end_date) DAY),
+                            ADDDATE(al.start_date, INTERVAL 1 - DAYOFWEEK(al.start_date) DAY)
+                        )) / 7 * 2
+                        - (DAYOFWEEK(al.start_date) = 7) -- 시작일이 토요일이면 -1
+                        - (DAYOFWEEK(al.end_date) = 1)   -- 종료일이 일요일이면 -1
+                    WHEN al.type = 2 THEN 0.5
+                    WHEN al.type = 3 THEN 0.25
+                    ELSE 0
                 END
             )
         FROM annual_leave al 
         WHERE al.status = 1 AND al.employee_id = e.id
     ) AS use_leave_count,
-    (
-        CASE 
-            WHEN TIMESTAMPDIFF(YEAR, e.startDate, CURRENT_DATE()) = 0 THEN 
-                TIMESTAMPDIFF(MONTH, e.startDate, CURRENT_DATE())
-            ELSE 
-                TIMESTAMPDIFF(MONTH, e.startDate, CURRENT_DATE()) + 
-                FLOOR(TIMESTAMPDIFF(YEAR, e.startDate, CURRENT_DATE()) / 1) * 15 
-        END
-        +
-        (
-            SELECT 
-                IFNULL(SUM(al.given_number), 0)
-            FROM annual_leave al
-            WHERE al.employee_id = e.id AND al.status = 1
-        )
-    ) AS annual_leave_count
+
+   (
+    -- 1년 이상 근무한 경우 (2025년 1월 1일 기준)
+    CASE
+        WHEN ABS(DATEDIFF('2025-01-01', e.startDate)) >= 365 THEN
+            -- 매년 1월 1일 15개 지급 (1년 이상 근무자)
+            15
+        ELSE 0
+    END
+    +
+    -- 1년 미만 근무한 경우 (입사일에 따른 연차 지급)
+    CASE
+        WHEN ABS(DATEDIFF('2025-01-01', e.startDate)) < 365 AND DATEDIFF(CURRENT_DATE(), '2025-01-01') >= 0 THEN
+            -- 2025년 1월 1일부터 매월 1개씩 발생
+            TIMESTAMPDIFF(MONTH, '2025-01-01', CURRENT_DATE())
+        ELSE 0
+    END
+    +
+    -- 입사 첫해 연차: 입사일 기준 1년이 되는 날 연차 지급 (입사 재직일 ÷ 365 * 15)
+    CASE
+        WHEN ABS(DATEDIFF('2025-01-01', e.startDate)) < 365 AND DATEDIFF(CURRENT_DATE(), e.startDate) >= 365 THEN
+            ROUND(
+               (DATEDIFF(CONCAT(YEAR(e.startDate), '-12-31'), e.startDate) / 366) * 15
+            )
+        ELSE 0
+    END
+    +
+    -- 매년 1월 1일 추가 지급: 1년 이상 근무한 경우 15개 지급
+    CASE 
+        WHEN YEAR(CURRENT_DATE()) > 2025 AND DATEDIFF(CURRENT_DATE(), e.startDate) >= 365 THEN 15
+        ELSE 0
+    END
+) AS annual_leave_count
 FROM employees e`;
 
     let conditions = [];
@@ -67,10 +90,11 @@ FROM employees e`;
     }
 
     // `status > -1` 조건 추가
-    const statusCondition = `status > -1`;
+    const statusCondition = `e.status > -1`;
     countSql += conditions.length > 0 ? ` AND ${statusCondition}` : ` WHERE ${statusCondition}`;
     dataSql += conditions.length > 0 ? ` AND ${statusCondition}` : ` WHERE ${statusCondition}`;
-    dataSql += " order by e.employee_num asc ";
+
+    dataSql += ` ORDER BY e.employee_num ASC`;
     dataSql += ` LIMIT ? OFFSET ?`;
     values.push(limit, (page - 1) * limit);
 
@@ -79,8 +103,6 @@ FROM employees e`;
 
     console.log("dataSqldataSql", dataSql);
 
-    // const json = await result.json();
-    // console.log("Employee List Response:", json);
     return NextResponse.json({ success: true, totalCount: countResult?.[0]?.totalCount, data: result }, { status: 200 });
   } catch (err) {
     console.error("Error fetching employee list:", err);

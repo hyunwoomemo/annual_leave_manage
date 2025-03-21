@@ -74,12 +74,24 @@ export const columns: ColumnDef<Product>[] = [
         case 12:
           return `${row.original.given_number}일`;
         default:
-          const start = row.getValue("start_date");
-          const end = row.original.end_date;
+          const start = moment(row.getValue("start_date"));
+          const end = moment(row.original.end_date);
 
-          const daysDifference = moment(end).diff(moment(start), "days");
+          // 전체 일수 계산
+          let totalDays = end.diff(start, "days") + 1;
 
-          return <span>{-(daysDifference + 1) + "일"}</span>;
+          // 주말 개수 계산
+          let weekendCount = 0;
+          for (let m = moment(start); m.isSameOrBefore(end); m.add(1, "days")) {
+            if (m.day() === 0 || m.day() === 6) {
+              weekendCount++;
+            }
+          }
+
+          // 주말 제외하고 연차 개수 계산
+          const leaveCount = totalDays - weekendCount;
+
+          return <span>{-leaveCount + "일"}</span>;
       }
     },
   },

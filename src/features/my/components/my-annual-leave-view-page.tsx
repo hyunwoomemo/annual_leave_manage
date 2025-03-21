@@ -68,7 +68,7 @@ const MyAnnualLeaveViewPage = ({ data, manage }) => {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data.use_leave_count ? data.use_leave_count : 0}</div>
+            <div className="text-2xl font-bold">{data.use_leave_count ? Number(data.use_leave_count).toFixed(2) : 0}</div>
             {/* <p className="text-xs text-muted-foreground">+180.1% from last month</p> */}
           </CardContent>
         </Card>

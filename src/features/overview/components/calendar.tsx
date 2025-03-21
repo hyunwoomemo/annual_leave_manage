@@ -12,6 +12,7 @@ import koLocale from "@fullcalendar/core/locales/ko"; // 한국어 로케일 임
 import { useRouter } from "next/navigation";
 import moment from "moment";
 import { useTheme } from "next-themes";
+import CalendarDetail from "./calendar-detail";
 
 export default function Calendar({ data, totalCount }) {
   const [year, setYear] = useQueryState("year", parseAsInteger.withOptions({ shallow: false }).withDefault(new Date().getFullYear()));
@@ -19,6 +20,7 @@ export default function Calendar({ data, totalCount }) {
   const [events, setEvents] = useState();
   const router = useRouter();
   const { theme } = useTheme();
+  const [selectedEvent, setSelectedEvent] = useState({});
 
   const handleDatesSet = (info) => {
     console.log("info", info, info.start);
@@ -119,11 +121,15 @@ export default function Calendar({ data, totalCount }) {
         //   console.log("eee", e);
         //   return true;
         // }}
+        eventClick={(e) => {
+          setSelectedEvent(e.event);
+        }}
       />
       {/* </div> */}
       {/* </TabsContent>
         </Tabs>
       </div> */}
+      {selectedEvent && <CalendarDetail event={selectedEvent} />}
     </PageContainer>
   );
 }
