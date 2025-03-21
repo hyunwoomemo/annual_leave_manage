@@ -33,10 +33,10 @@ export async function GET(req: Request, { params }) {
         WHERE al.status = 1 AND al.employee_id = e.id
     ) AS use_leave_count,
 
-  (
+   (
     -- 1년 이상 근무한 경우 (2025년 1월 1일 기준)
     CASE
-        WHEN DATEDIFF(CURRENT_DATE(), '2025-01-01') >= 365 THEN
+        WHEN ABS(DATEDIFF('2025-01-01', e.startDate)) >= 365 THEN
             -- 매년 1월 1일 15개 지급 (1년 이상 근무자)
             15
         ELSE 0
@@ -44,7 +44,7 @@ export async function GET(req: Request, { params }) {
     +
     -- 1년 미만 근무한 경우 (입사일에 따른 연차 지급)
     CASE
-        WHEN DATEDIFF(CURRENT_DATE(), e.startDate) < 365 AND DATEDIFF(CURRENT_DATE(), '2025-01-01') >= 0 THEN
+        WHEN ABS(DATEDIFF('2025-01-01', e.startDate)) < 365 AND DATEDIFF(CURRENT_DATE(), '2025-01-01') >= 0 THEN
             -- 2025년 1월 1일부터 매월 1개씩 발생
             TIMESTAMPDIFF(MONTH, '2025-01-01', CURRENT_DATE())
         ELSE 0
@@ -52,9 +52,9 @@ export async function GET(req: Request, { params }) {
     +
     -- 입사 첫해 연차: 입사일 기준 1년이 되는 날 연차 지급 (입사 재직일 ÷ 365 * 15)
     CASE
-        WHEN DATEDIFF(CURRENT_DATE(), e.startDate) >= 365 THEN
-            FLOOR(
-                (DATEDIFF(e.startDate + INTERVAL 1 YEAR, e.startDate) / 365) * 15
+        WHEN ABS(DATEDIFF('2025-01-01', e.startDate)) < 365 AND DATEDIFF(CURRENT_DATE(), e.startDate) >= 365 THEN
+            ROUND(
+               (DATEDIFF(CONCAT(YEAR(e.startDate), '-12-31'), e.startDate) / 366) * 15
             )
         ELSE 0
     END
