@@ -34,7 +34,6 @@ export async function GET(req: Request) {
         FROM annual_leave al 
         WHERE al.status = 1 AND al.employee_id = e.id
     ) AS use_leave_count,
-
    (
     -- 1년 이상 근무한 경우 (2025년 1월 1일 기준)
     CASE
@@ -45,12 +44,27 @@ export async function GET(req: Request) {
     END
     +
     -- 1년 미만 근무한 경우 (입사일에 따른 연차 지급)
-    CASE
-        WHEN ABS(DATEDIFF('2025-01-01', e.startDate)) < 365 AND DATEDIFF(CURRENT_DATE(), '2025-01-01') >= 0 THEN
-            -- 2025년 1월 1일부터 매월 1개씩 발생
-            TIMESTAMPDIFF(MONTH, '2025-01-01', CURRENT_DATE())
-        ELSE 0
-    END
+CASE
+    -- 2025년 1월 1일 이전 입사자 (근무일수가 1년 미만인 경우)
+    WHEN e.startDate < '2025-01-01' 
+         AND DATEDIFF(CURRENT_DATE(), e.startDate) < 365 THEN
+        1 + TIMESTAMPDIFF(
+            MONTH, 
+            GREATEST(e.startDate, '2025-01-01'),  -- 2025년 1월 1일부터 연차 시작
+            CURRENT_DATE()
+        )
+    
+    -- 2025년 1월 1일 이후 입사자 (30일 이상 근무 + 근무일수 1년 미만인 경우)
+    WHEN DATEDIFF(CURRENT_DATE(), e.startDate) >= 30 
+         AND DATEDIFF(CURRENT_DATE(), e.startDate) < 365 THEN
+        TIMESTAMPDIFF(
+            MONTH, 
+            e.startDate, 
+            CURRENT_DATE()
+        )
+    
+    ELSE 0
+END
     +
     -- 입사 첫해 연차: 입사일 기준 1년이 되는 날 연차 지급 (입사 재직일 ÷ 365 * 15)
     CASE
