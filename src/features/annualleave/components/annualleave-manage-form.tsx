@@ -101,6 +101,8 @@ const AnnualLeaveManageForm: React.FC<AnnualLeaveFormType> = ({ employee, create
     e.preventDefault();
     const values = form.getValues();
 
+    console.log("vvv", values);
+
     const formData = new FormData();
     for (const key in values) {
       if (!values[key]) continue;
@@ -201,17 +203,45 @@ const AnnualLeaveManageForm: React.FC<AnnualLeaveFormType> = ({ employee, create
                 {form.watch("type") && (
                   <>
                     <FormField
-                      // control={form.control}
                       name="given_number"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{form.watch("type") == 11 ? "지급" : "차감"} 갯수</FormLabel>
-                          <FormControl>
-                            <Input type="number" disabled={loading} placeholder={`${form.watch("type") == 11 ? "지급" : "차감"} 갯수를 입력하세요.`} {...field} value={field.value} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      render={({ field }) => {
+                        const isGive = form.watch("type") == 11;
+                        const label = isGive ? "지급" : "차감";
+
+                        const handleAdd = (amount: number) => {
+                          const current = parseFloat(field.value) || 0;
+                          field.onChange((current + amount).toFixed(3));
+                        };
+
+                        const handleReset = () => {
+                          field.onChange("0");
+                        };
+
+                        return (
+                          <FormItem>
+                            <FormLabel>{label} 갯수</FormLabel>
+                            <FormControl>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                                  <Button type="button" onClick={() => handleAdd(0.125)}>
+                                    +1시간
+                                  </Button>
+                                  <Button type="button" onClick={() => handleAdd(1)}>
+                                    +1일
+                                  </Button>
+                                  <Button type="button" variant="destructive" onClick={handleReset}>
+                                    리셋
+                                  </Button>
+                                </div>
+                                <div style={{ marginTop: "6px" }}>
+                                  총 <strong>{field.value || 0}</strong>일
+                                </div>
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
                     />
                     <FormField
                       // control={form.control}

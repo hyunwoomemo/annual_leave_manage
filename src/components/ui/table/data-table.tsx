@@ -66,9 +66,10 @@ export function DataTable<TData, TValue>({ columns, data, totalItems, pageSizeOp
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    console.log("cccc", cell.column.columnDef.cell);
+                    return <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>;
+                  })}
                 </TableRow>
               ))
             ) : (

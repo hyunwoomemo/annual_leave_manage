@@ -70,9 +70,10 @@ export const columns: ColumnDef<Product>[] = [
         case 3:
           return "-0.25일";
         case 11:
-          return `+${row.original.given_number}일`;
+          return Math.abs(row.original.given_number) < 1 ? `+${row.original.given_number * 8}시간` : `+${row.original.given_number}일`;
         case 12:
-          return `${row.original.given_number}일`;
+          return Math.abs(row.original.given_number) < 1 ? `${row.original.given_number * 8}시간` : `${row.original.given_number}일`;
+
         default:
           const start = moment(row.getValue("start_date"));
           const end = moment(row.original.end_date);

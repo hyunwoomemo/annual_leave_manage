@@ -2,6 +2,7 @@ import executeQuery from "@/lib/db";
 import moment from "moment";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
+import { toast } from "sonner";
 
 export async function POST(request: Request) {
   try {
@@ -20,6 +21,15 @@ export async function POST(request: Request) {
     const status = type > 10 ? 1 : 0; // Set status to 1 if type > 10, otherwise keep it null
 
     const values = [employee_id, adjustedStartDate, adjustedEndDate, type, type2, start_time, end_time, description, adjustedGivenNumber, status];
+
+    const [prevData] = await executeQuery(`select COUNT(*) as count from annual_leave where employee_id = ? and start_date = ?`, [employee_id, start_date]);
+
+    console.log("prevData", prevData);
+
+    if (prevData.count > 0) {
+      // return toast.error("같은 날짜로 신청한 연차가 있습니다.");
+      return NextResponse.json({ success: false, error: "같은 날짜로 신청한 연차가 있습니다." });
+    }
 
     // Prepare SQL query with an additional status column
     let sql = `

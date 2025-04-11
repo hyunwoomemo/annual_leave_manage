@@ -13,7 +13,7 @@ export async function GET(req: Request, { params }) {
     e.*,
     (
         -- 사용 연차 계산 (주말 제외)
-        SELECT 
+        (SELECT 
             SUM(
                 CASE 
                     WHEN al.type = 1 THEN 
@@ -30,7 +30,14 @@ export async function GET(req: Request, { params }) {
                 END
             )
         FROM annual_leave al 
-        WHERE al.status = 1 AND al.employee_id = e.id
+        WHERE al.status = 1 AND al.employee_id = e.id) +
+        (
+            -- type 12 (수동 차감)만 사용 연차에 포함
+            SELECT 
+                SUM(ABS(al.given_number)) 
+            FROM annual_leave al
+            WHERE al.status = 1 AND al.employee_id = e.id AND al.type = 12
+        )
     ) AS use_leave_count,
 
    (
@@ -79,6 +86,15 @@ END
         WHEN YEAR(CURRENT_DATE()) > 2025 AND DATEDIFF(CURRENT_DATE(), e.startDate) >= 365 THEN 15
         ELSE 0
     END
+    +
+(
+    -- 수동 지급 (type 11)도 발생 연차에 포함
+    SELECT 
+        IFNULL(SUM(al.given_number), 0) 
+    FROM annual_leave al
+    WHERE al.status = 1 AND al.employee_id = e.id AND al.type = 11
+)
+    
 ) AS annual_leave_count
 FROM employees e WHERE e.employee_num = ?;
 `;
