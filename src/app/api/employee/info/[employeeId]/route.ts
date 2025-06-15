@@ -40,53 +40,41 @@ export async function GET(req: Request, { params }) {
         )
     ) AS use_leave_count,
 
-   (
-    -- 1년 이상 근무한 경우 (2025년 1월 1일 기준)
-    CASE
-        WHEN ABS(DATEDIFF('2025-01-01', e.startDate)) >= 365 THEN
-            -- 매년 1월 1일 15개 지급 (1년 이상 근무자)
-            15
-        ELSE 0
-    END
-    +
-    -- 1년 미만 근무한 경우 (입사일에 따른 연차 지급)
+    (
+        -- 연차 발생량 계산 (관리자 지급/차감 포함)
+        (
 CASE
-    -- 2025년 1월 1일 이전 입사자 (근무일수가 1년 미만인 경우)
-    WHEN e.startDate < '2025-01-01' 
-         AND DATEDIFF(CURRENT_DATE(), e.startDate) < 365 THEN
-        1 + TIMESTAMPDIFF(
-            MONTH, 
-            GREATEST(e.startDate, '2025-01-01'),  -- 2025년 1월 1일부터 연차 시작
-            CURRENT_DATE()
-        )
-    
-    -- 2025년 1월 1일 이후 입사자 (30일 이상 근무 + 근무일수 1년 미만인 경우)
-    WHEN DATEDIFF(CURRENT_DATE(), e.startDate) >= 30 
-         AND DATEDIFF(CURRENT_DATE(), e.startDate) < 365 THEN
-        TIMESTAMPDIFF(
-            MONTH, 
-            e.startDate, 
-            CURRENT_DATE()
-        )
-    
+    WHEN ABS(DATEDIFF('2025-01-01', e.startDate)) >= 365
+         AND (e.enddate IS NULL OR e.enddate > '2025-01-01') THEN
+        15
     ELSE 0
 END
-    +
-    -- 입사 첫해 연차: 입사일 기준 1년이 되는 날 연차 지급 (입사 재직일 ÷ 365 * 15)
-    CASE
-        WHEN ABS(DATEDIFF('2025-01-01', e.startDate)) < 365 AND DATEDIFF(CURRENT_DATE(), e.startDate) >= 365 THEN
-            ROUND(
-               (DATEDIFF(CONCAT(YEAR(e.startDate), '-12-31'), e.startDate) / 366) * 15
+            +
+           CASE
+        -- 2025년 1월 1일 기준 1년 미만 근무자: 1년 도달 전까지 매월 1개씩
+        WHEN  DATEDIFF('2025-01-01', e.startDate) < 365 THEN
+            TIMESTAMPDIFF(
+                MONTH,
+                GREATEST(e.startDate, '2025-01-01'),
+                LEAST(
+                    DATE_ADD(e.startDate, INTERVAL 1 YEAR),
+                    IFNULL(e.enddate, CURRENT_DATE())
+                )
             )
         ELSE 0
     END
-    +
-    -- 매년 1월 1일 추가 지급: 1년 이상 근무한 경우 15개 지급
-    CASE 
-        WHEN YEAR(CURRENT_DATE()) > 2025 AND DATEDIFF(CURRENT_DATE(), e.startDate) >= 365 THEN 15
-        ELSE 0
-    END
-    +
+            +
+            CASE
+                WHEN ABS(DATEDIFF('2025-01-01', e.startDate)) < 365 AND DATEDIFF(CURRENT_DATE(), e.startDate) >= 365 THEN
+                    ROUND((DATEDIFF(CONCAT(YEAR(e.startDate), '-12-31'), e.startDate) / 366) * 15)
+                ELSE 0
+            END
+            +
+            CASE 
+                WHEN YEAR(CURRENT_DATE()) > 2025 AND DATEDIFF(CURRENT_DATE(), e.startDate) >= 365 THEN 15
+                ELSE 0
+            END
+            +
 (
     -- 수동 지급 (type 11)도 발생 연차에 포함
     SELECT 
@@ -94,8 +82,8 @@ END
     FROM annual_leave al
     WHERE al.status = 1 AND al.employee_id = e.id AND al.type = 11
 )
-    
-) AS annual_leave_count
+        )
+    ) AS annual_leave_count
 FROM employees e WHERE e.employee_num = ?;
 `;
     const values = [employeeId];

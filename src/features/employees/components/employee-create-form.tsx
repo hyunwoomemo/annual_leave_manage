@@ -16,6 +16,7 @@ import { useAtomValue } from "jotai";
 import { selectedEmployee } from "@/store/employee/atom";
 import { E } from "@faker-js/faker/dist/airline-BnpeTvY9";
 import { signOut } from "next-auth/react";
+import { parseDate } from "@internationalized/date";
 const EmployeeCreateForm = ({ create, update, session }) => {
   const [values, setValues] = useState({});
   const [updateValues, setupdateValues] = useState({});
@@ -24,7 +25,7 @@ const EmployeeCreateForm = ({ create, update, session }) => {
 
   useEffect(() => {
     if (update && employee) {
-      setValues({ ...employee, startdate: "", birthdate: "" });
+      setValues({ ...employee });
     } else {
       if (update && !employee) {
         route.push("/dashboard/employee");
@@ -47,8 +48,6 @@ const EmployeeCreateForm = ({ create, update, session }) => {
         text = text.slice(0, 6) + "-" + text.slice(6);
       }
     }
-
-    console.log(text);
 
     if (update) {
       setValues((prev) => ({ ...prev, [type]: text }));
@@ -105,6 +104,8 @@ const EmployeeCreateForm = ({ create, update, session }) => {
     }
   };
 
+  console.log("vvv", values, updateValues);
+
   return (
     <div className="space-y-4">
       <div className="flex items-start justify-between">
@@ -152,12 +153,36 @@ const EmployeeCreateForm = ({ create, update, session }) => {
             <div className="flex flex-col flex-1 gap-4 py-4 my-4">
               <Label>생년월일</Label>
               {/* <Input placeholder="생년월일을 입력해주세요." /> */}
-              <DatePicker onChange={(e) => handleDateChange("birthDate", e)} onClick={(e) => console.log("eee", e)} showMonthAndYearPickers label="Birth Date" variant="bordered" />
+              <DatePicker
+                value={updateValues.birthDate || values?.birthdate ? parseDate(moment(updateValues.birthDate || values?.birthdate).format("YYYY-MM-DD")) : null}
+                onChange={(e) => handleDateChange("birthDate", e)}
+                onClick={(e) => console.log("eee", e)}
+                showMonthAndYearPickers
+                label="Birth Date"
+                variant="bordered"
+              />
             </div>
             <div className="flex flex-col flex-1 gap-4 py-4 my-4">
               <Label>입사일</Label>
               {/* <Input placeholder="입사일을 입력해주세요." /> */}
-              <DatePicker onChange={(e) => handleDateChange("startDate", e)} showMonthAndYearPickers label="Start Date" variant="bordered" />
+              <DatePicker
+                value={updateValues.startDate || values?.startdate ? parseDate(moment(updateValues.startDate || values?.startdate).format("YYYY-MM-DD")) : null}
+                onChange={(e) => handleDateChange("startDate", e)}
+                showMonthAndYearPickers
+                label="Start Date"
+                variant="bordered"
+              />
+            </div>
+            <div className="flex flex-col flex-1 gap-4 py-4 my-4">
+              <Label>퇴사일</Label>
+              {/* <Input placeholder="입사일을 입력해주세요." /> */}
+              <DatePicker
+                value={updateValues?.endDate || values?.enddate ? parseDate(moment(updateValues?.endDate || values?.enddate).format("YYYY-MM-DD")) : null}
+                onChange={(e) => handleDateChange("endDate", e)}
+                showMonthAndYearPickers
+                label="End Date"
+                variant="bordered"
+              />
             </div>
           </div>
         </CardContent>
