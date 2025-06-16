@@ -12,39 +12,29 @@ export async function GET(req: Request) {
     // 총 갯수 쿼리
     let countSql = `SELECT COUNT(*) AS totalCount FROM employees e`;
     let dataSql = `SELECT 
-    e.*,
-
-    (
-        -- 사용 연차 계산 (주말 제외 + 수동 지급/차감 포함)
-        (
-            SELECT 
-                SUM(
-                    CASE 
-                        WHEN al.type = 1 THEN 
-                            ABS(DATEDIFF(al.end_date, al.start_date)) + 1
-                            - ABS(DATEDIFF(
-                                ADDDATE(al.end_date, INTERVAL 1 - DAYOFWEEK(al.end_date) DAY),
-                                ADDDATE(al.start_date, INTERVAL 1 - DAYOFWEEK(al.start_date) DAY)
-                            )) / 7 * 2
-                            - (DAYOFWEEK(al.start_date) = 7)
-                            - (DAYOFWEEK(al.end_date) = 1)
-                        WHEN al.type = 2 THEN 0.5
-                        WHEN al.type = 3 THEN 0.25
-                        ELSE 0
-                    END
-                )
-            FROM annual_leave al 
-            WHERE al.status = 1 AND al.employee_id = e.id
+  e.*,
+  (
+    IFNULL((
+      SELECT 
+        SUM(
+          CASE 
+            WHEN al.type = 1 THEN ABS(DATEDIFF(al.end_date, al.start_date)) + 1
+            WHEN al.type = 2 THEN 0.5
+            WHEN al.type = 3 THEN 0.25
+            ELSE 0
+          END
         )
-        +
-        (
-            -- type 11, 12는 사용 연차로 절댓값만큼 포함
-            SELECT 
-                SUM(ABS(al.given_number)) 
-            FROM annual_leave al
-            WHERE al.status = 1 AND al.employee_id = e.id AND al.type IN (11, 12)
-        )
-    ) AS use_leave_count,
+      FROM annual_leave al 
+      WHERE al.status = 1 AND al.employee_id = e.id
+    ), 0)
+    +
+    IFNULL((
+      SELECT 
+        SUM(ABS(al.given_number)) 
+      FROM annual_leave al
+      WHERE al.status = 1 AND al.employee_id = e.id AND al.type IN (11, 12)
+    ), 0)
+  ) AS use_leave_count,
 
     (
         -- 연차 발생량 계산 (관리자 지급/차감 포함)

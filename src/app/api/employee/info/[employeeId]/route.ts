@@ -13,32 +13,27 @@ export async function GET(req: Request, { params }) {
     e.*,
     (
         -- 사용 연차 계산 (주말 제외)
-        (SELECT 
-            SUM(
-                CASE 
-                    WHEN al.type = 1 THEN 
-                        ABS(DATEDIFF(al.end_date, al.start_date)) + 1
-                        - ABS(DATEDIFF(
-                            ADDDATE(al.end_date, INTERVAL 1 - DAYOFWEEK(al.end_date) DAY),
-                            ADDDATE(al.start_date, INTERVAL 1 - DAYOFWEEK(al.start_date) DAY)
-                        )) / 7 * 2
-                        - (DAYOFWEEK(al.start_date) = 7) -- 시작일이 토요일이면 -1
-                        - (DAYOFWEEK(al.end_date) = 1)   -- 종료일이 일요일이면 -1
-                    WHEN al.type = 2 THEN 0.5
-                    WHEN al.type = 3 THEN 0.25
-                    ELSE 0
-                END
-            )
-        FROM annual_leave al 
-        WHERE al.status = 1 AND al.employee_id = e.id) +
-        (
-            -- type 12 (수동 차감)만 사용 연차에 포함
-            SELECT 
-                SUM(ABS(al.given_number)) 
-            FROM annual_leave al
-            WHERE al.status = 1 AND al.employee_id = e.id AND al.type = 12
+       IFNULL((
+      SELECT 
+        SUM(
+          CASE 
+            WHEN al.type = 1 THEN ABS(DATEDIFF(al.end_date, al.start_date)) + 1
+            WHEN al.type = 2 THEN 0.5
+            WHEN al.type = 3 THEN 0.25
+            ELSE 0
+          END
         )
-    ) AS use_leave_count,
+      FROM annual_leave al 
+      WHERE al.status = 1 AND al.employee_id = e.id
+    ), 0)
+    +
+    IFNULL((
+      SELECT 
+        SUM(ABS(al.given_number)) 
+      FROM annual_leave al
+      WHERE al.status = 1 AND al.employee_id = e.id AND al.type IN (11, 12)
+    ), 0)
+  ) AS use_leave_count,
 
     (
         -- 연차 발생량 계산 (관리자 지급/차감 포함)
