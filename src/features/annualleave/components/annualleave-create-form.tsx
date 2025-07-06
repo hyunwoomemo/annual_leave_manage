@@ -63,11 +63,11 @@ const AnnualLeaveCreateForm: React.FC<AnnualLeaveFormType> = ({ initialData, cat
     },
     {
       id: "4",
-      name: "공가",
+      name: "경조 휴가",
     },
     {
       id: "5",
-      name: "경조 휴가",
+      name: "공가",
     },
   ];
 

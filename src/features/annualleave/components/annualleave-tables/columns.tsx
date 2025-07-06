@@ -122,9 +122,9 @@ export const columns: ColumnDef<Product>[] = [
         case 3:
           return "반반차";
         case 4:
-          return "공가";
-        case 5:
           return "경조 휴가";
+        case 5:
+          return "공가";
       }
     },
   },
