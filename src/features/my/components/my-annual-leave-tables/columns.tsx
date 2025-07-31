@@ -90,7 +90,8 @@ export const columns: ColumnDef<Product>[] = [
           }
 
           // 주말 제외하고 연차 개수 계산
-          const leaveCount = totalDays - weekendCount;
+          // const leaveCount = totalDays - weekendCount;
+          const leaveCount = totalDays;
 
           return <span>{-leaveCount + "일"}</span>;
       }

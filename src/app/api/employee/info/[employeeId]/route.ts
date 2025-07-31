@@ -12,7 +12,7 @@ export async function GET(req: Request, { params }) {
     const sql = `SELECT 
     e.*,
     (
-        -- 사용 연차 계산 (주말 제외)
+        -- 사용 연차 계산: 실제 연차 사용만 (type 1,2,3)
        IFNULL((
       SELECT 
         SUM(
@@ -24,19 +24,12 @@ export async function GET(req: Request, { params }) {
           END
         )
       FROM annual_leave al 
-      WHERE al.status = 1 AND al.employee_id = e.id
-    ), 0)
-    +
-    IFNULL((
-      SELECT 
-        SUM(ABS(al.given_number)) 
-      FROM annual_leave al
-      WHERE al.status = 1 AND al.employee_id = e.id AND al.type IN (11, 12)
+      WHERE al.status = 1 AND al.employee_id = e.id AND al.type IN (1,2,3)
     ), 0)
   ) AS use_leave_count,
 
     (
-        -- 연차 발생량 계산 (관리자 지급/차감 포함)
+        -- 연차 발생량 계산: 기본 연차 + 관리자 지급 - 관리자 차감
         (
 CASE
     WHEN ABS(DATEDIFF('2025-01-01', e.startDate)) >= 365
@@ -71,11 +64,19 @@ END
             END
             +
 (
-    -- 수동 지급 (type 11)도 발생 연차에 포함
+    -- 관리자 지급 (type 11) 더하기
     SELECT 
         IFNULL(SUM(al.given_number), 0) 
     FROM annual_leave al
     WHERE al.status = 1 AND al.employee_id = e.id AND al.type = 11
+)
+            -
+(
+    -- 관리자 차감 (type 12) 빼기
+    SELECT 
+        IFNULL(SUM(ABS(al.given_number)), 0) 
+    FROM annual_leave al
+    WHERE al.status = 1 AND al.employee_id = e.id AND al.type = 12
 )
         )
     ) AS annual_leave_count
@@ -83,7 +84,8 @@ FROM employees e WHERE e.employee_num = ?;
 `;
     const values = [employeeId];
     console.log("ss", sql, values);
-    const [rows] = await executeQuery(sql, values);
+    const result = (await executeQuery(sql, values)) as any[];
+    const rows = result[0];
 
     console.log("rorrrr", rows);
 
