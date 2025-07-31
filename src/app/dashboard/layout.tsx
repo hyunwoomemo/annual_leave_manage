@@ -15,10 +15,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar:state")?.value === "true";
 
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/annualLeave/getTaskCount`);
+  const { count } = await res.json();
+
   return (
     <KBar>
       <SidebarProvider defaultOpen={defaultOpen}>
-        <AppSidebar />
+        <AppSidebar count={count} />
         <SidebarInset>
           <Header />
           {/* page main content */}

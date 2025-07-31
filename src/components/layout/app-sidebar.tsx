@@ -32,39 +32,9 @@ export const company = {
   plan: "Enterprise",
 };
 
-export default function AppSidebar() {
+export default function AppSidebar({ count }) {
   const { status, data: session } = useSession();
   const pathname = usePathname();
-  const [count, setCount] = React.useState(0);
-  const [isLoading, setIsLoading] = React.useState(true);
-
-  // Fetch count on component mount
-  React.useEffect(() => {
-    const fetchCount = async () => {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/annualLeave/getTaskCount`, {
-          signal: controller.signal,
-        });
-
-        clearTimeout(timeoutId);
-
-        if (res.ok) {
-          const data = await res.json();
-          setCount(data.count || 0);
-        }
-      } catch (error) {
-        console.error('Failed to fetch task count:', error);
-        setCount(0);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchCount();
-  }, []);
 
   return (
     <Sidebar collapsible="icon">
@@ -106,11 +76,7 @@ export default function AppSidebar() {
                                 <SidebarMenuSubButton asChild isActive={pathname === subItem.url}>
                                   <Link href={subItem.url} className="flex gap-2 items-end">
                                     <span>{subItem.title}</span>
-                                    {subItem.url === "/dashboard/annualleave" && (
-                                      <div className="text-[12px] not-sr-only">
-                                        대기 중인 건 ({isLoading ? "..." : count})
-                                      </div>
-                                    )}
+                                    {subItem.url === "/dashboard/annualleave" && <div className="text-[12px]  not-sr-only">대기 중인 건 ({count})</div>}
                                   </Link>
                                 </SidebarMenuSubButton>
                               </SidebarMenuSubItem>
