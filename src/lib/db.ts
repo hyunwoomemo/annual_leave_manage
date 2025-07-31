@@ -5,7 +5,8 @@ const pool = createPool({
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
+  port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 3306,
+  connectionLimit: 10, // Limit concurrent connections
 });
 
 pool.getConnection((err, conn) => {
@@ -14,7 +15,7 @@ pool.getConnection((err, conn) => {
   conn.release();
 });
 
-const executeQuery = (query, arrParams) => {
+const executeQuery = (query: string, arrParams: any[]) => {
   return new Promise((resolve, reject) => {
     try {
       pool.query(query, arrParams, (err, data) => {

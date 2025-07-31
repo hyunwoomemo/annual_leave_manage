@@ -1,67 +1,88 @@
 import executeQuery from "@/lib/db";
 import { NextResponse } from "next/server";
 
+// Add timeout for database queries
+const queryWithTimeout = async (sql: string, values: any[], timeoutMs: number = 8000) => {
+  return Promise.race([
+    executeQuery(sql, values),
+    new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Database query timeout')), timeoutMs)
+    )
+  ]);
+};
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const year = searchParams.get("year") !== "null" ? (searchParams.get("year") ? parseInt(searchParams.get("year")) : new Date().getFullYear()) : new Date().getFullYear();
+    
+    const yearParam = searchParams.get("year");
+    const monthParam = searchParams.get("month");
+    
+    const year = yearParam && yearParam !== "null" ? 
+      parseInt(yearParam) : 
+      new Date().getFullYear();
 
-    const month = searchParams.get("month") !== "null" ? (searchParams.get("month") ? parseInt(searchParams.get("month")) + 1 : new Date().getMonth() + 1) : new Date().getMonth() + 1;
+    const month = monthParam && monthParam !== "null" ? 
+      parseInt(monthParam) + 1 : 
+      new Date().getMonth() + 1;
 
-    console.log(";year", year, searchParams.get("year"), month, searchParams.get("month"));
+    console.log("Fetching data for:", { year, month });
 
-    // 이전, 현재, 다음 달 및 연도 계산
-    const prevMonth = month === 1 ? 12 : month - 1;
-    const nextMonth = month === 12 ? 1 : month + 1;
+    // Simplified query - only get current month data to reduce complexity
+    const startDate = `${year}-${month.toString().padStart(2, '0')}-01`;
+    const endDate = `${year}-${month.toString().padStart(2, '0')}-31`;
 
-    const prevYear = month === 1 ? year - 1 : year;
-    const nextYear = month === 12 ? year + 1 : year;
+    // Single optimized query with JOIN
+    const dataSql = `
+      SELECT al.*, e.name, e.department 
+      FROM annual_leave al 
+      JOIN employees e ON al.employee_id = e.id 
+      WHERE al.start_date >= ? 
+        AND al.start_date <= ? 
+        AND al.status = 1 
+        AND al.type < 11
+      ORDER BY al.start_date ASC
+    `;
 
-    const currentYear = year;
+    const countSql = `
+      SELECT COUNT(*) AS totalCount 
+      FROM annual_leave al 
+      WHERE al.start_date >= ? 
+        AND al.start_date <= ? 
+        AND al.status = 1 
+        AND al.type < 11
+    `;
 
-    // 3개월 조건 배열 생성
-    const monthsAndYears = [
-      { year: prevYear, month: prevMonth },
-      { year: currentYear, month: month },
-      { year: nextYear, month: nextMonth },
-    ];
+    const values = [startDate, endDate];
 
-    console.log("monthsAndYears", monthsAndYears);
+    // Execute queries with timeout
+    const [countResult, dataResult] = await Promise.all([
+      queryWithTimeout(countSql, values),
+      queryWithTimeout(dataSql, values)
+    ]);
 
-    // 총 갯수 쿼리
-    let countSql = `SELECT COUNT(*) AS totalCount FROM annual_leave al`;
-    let dataSql = `SELECT al.*, e.name, e.department FROM annual_leave al JOIN employees e ON al.employee_id = e.id`;
+    console.log("Query completed successfully");
 
-    // 조건 추가
-    let conditions = [];
-    let values = [];
-
-    monthsAndYears.forEach(({ year, month }) => {
-      conditions.push(`(YEAR(al.start_date) = ? AND MONTH(al.start_date) = ?)`);
-      values.push(year, month);
+    return NextResponse.json({ 
+      totalCount: (countResult as any)?.[0]?.totalCount || 0, 
+      data: dataResult || [] 
+    }, { 
+      status: 200,
+      headers: {
+        'Cache-Control': 'public, max-age=60', // Cache for 1 minute
+      }
     });
-
-    // status > -1 조건 추가
-    const statusCondition = `al.status = 1`;
-
-    // 조건 연결
-    if (conditions.length > 0) {
-      const combinedConditions = `(${conditions.join(" OR ")})`;
-      countSql += ` WHERE ` + combinedConditions + ` AND ` + statusCondition + " AND type < 11";
-      dataSql += ` WHERE ` + combinedConditions + ` AND ` + statusCondition + " AND type < 11";
-    } else {
-      countSql += ` WHERE ` + statusCondition + " AND type < 11";
-      dataSql += ` WHERE ` + statusCondition + " AND type < 11";
-    }
-
-    const countResult = await executeQuery(countSql, values);
-    const result = await executeQuery(dataSql, values);
-
-    console.log("countResult", countResult, result);
-
-    return NextResponse.json({ totalCount: countResult?.[0]?.totalCount, data: result }, { status: 200 });
   } catch (err) {
     console.error("Error fetching annual_leave list:", err);
-    return NextResponse.json({ error: "Failed to load data" }, { status: 500 });
+    
+    if (err instanceof Error && err.message === 'Database query timeout') {
+      return NextResponse.json({ 
+        error: "요청 시간이 초과되었습니다. 다시 시도해주세요." 
+      }, { status: 504 });
+    }
+    
+    return NextResponse.json({ 
+      error: "데이터를 불러오는 중 오류가 발생했습니다." 
+    }, { status: 500 });
   }
 }
