@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     const status = type > 10 ? 1 : 0;
 
     // Check for existing annual leave on the same date first
-    const prevResult = (await executeQuery(`SELECT COUNT(*) as count FROM annual_leave WHERE employee_id = ? AND start_date = ?`, [employee_id, adjustedStartDate])) as CountResult[];
+    const prevResult = (await executeQuery(`SELECT COUNT(*) as count FROM annual_leave WHERE employee_id = ? AND start_date = ? AND status > -1`, [employee_id, adjustedStartDate])) as CountResult[];
 
     if (prevResult[0]?.count > 0) {
       return NextResponse.json({ success: false, error: "같은 날짜로 신청한 연차가 있습니다." });
