@@ -1,27 +1,26 @@
 "use client";
 
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { Plus } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { DatePicker } from "@nextui-org/date-picker";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import moment from "moment";
-import { useAtomValue } from "jotai";
 import { selectedEmployee } from "@/store/employee/atom";
-import { E } from "@faker-js/faker/dist/airline-BnpeTvY9";
-import { signOut } from "next-auth/react";
 import { parseDate } from "@internationalized/date";
-const EmployeeCreateForm = ({ create, update, session }) => {
-  const [values, setValues] = useState({});
-  const [updateValues, setupdateValues] = useState({});
+import { DatePicker } from "@nextui-org/date-picker";
+import { useAtomValue } from "jotai";
+import { Plus } from "lucide-react";
+import moment from "moment";
+import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+const EmployeeCreateForm = ({ create, update, session }: any) => {
+  const [values, setValues] = useState<any>({});
+  const [updateValues, setupdateValues] = useState<any>({});
   const route = useRouter();
-  const employee = useAtomValue(selectedEmployee);
+  const employee = useAtomValue(selectedEmployee) as any;
 
   useEffect(() => {
     if (update && employee) {
@@ -33,7 +32,7 @@ const EmployeeCreateForm = ({ create, update, session }) => {
     }
   }, [employee]);
 
-  const handleInputChange = (type, text) => {
+  const handleInputChange = (type: string, text: string) => {
     if (type === "personalId") {
       // 숫자만 허용하고 하이픈 제외
       text = text.replace(/[^0-9]/g, "");
@@ -50,19 +49,19 @@ const EmployeeCreateForm = ({ create, update, session }) => {
     }
 
     if (update) {
-      setValues((prev) => ({ ...prev, [type]: text }));
+      setValues((prev: any) => ({ ...prev, [type]: text }));
 
-      setupdateValues((prev) => ({ ...prev, [type]: text }));
+      setupdateValues((prev: any) => ({ ...prev, [type]: text }));
     } else {
-      setValues((prev) => ({ ...prev, [type]: text }));
+      setValues((prev: any) => ({ ...prev, [type]: text }));
     }
   };
 
-  const handleDateChange = (type, value) => {
+  const handleDateChange = (type: string, value: any) => {
+    const dateString = moment(new Date(value.year, value.month - 1, value.day)).format("YYYY-MM-DD");
+    setValues((prev: any) => ({ ...prev, [type]: dateString }));
     if (update) {
-      setupdateValues((prev) => ({ ...prev, [type]: moment(new Date(value.year, value.month - 1, value.day)).format("YYYY-MM-DD") }));
-    } else {
-      setValues((prev) => ({ ...prev, [type]: moment(new Date(value.year, value.month - 1, value.day)).format("YYYY-MM-DD") }));
+      setupdateValues((prev: any) => ({ ...prev, [type]: dateString }));
     }
   };
 
@@ -145,18 +144,17 @@ const EmployeeCreateForm = ({ create, update, session }) => {
                 maxLength={14}
                 value={values?.personalId}
                 defaultValue={values?.personalId}
-                onChange={(e) => handleInputChange("personalId", e.target.value, e)}
+                onChange={(e) => handleInputChange("personalId", e.target.value)}
                 placeholder="주민번호를 입력해주세요."
-                onBlur={(e) => values.personalId.length < 14 && toast.error("주민번호를 정확히 입력해주세요.")}
+                onBlur={(e) => values.personalId?.length < 14 && toast.error("주민번호를 정확히 입력해주세요.")}
               />
             </div>
             <div className="flex flex-col flex-1 gap-4 py-4 my-4">
               <Label>생년월일</Label>
               {/* <Input placeholder="생년월일을 입력해주세요." /> */}
               <DatePicker
-                value={updateValues.birthDate || values?.birthdate ? parseDate(moment(updateValues.birthDate || values?.birthdate).format("YYYY-MM-DD")) : null}
+                value={(update && updateValues?.birthDate) || values?.birthDate ? (parseDate(moment((update && updateValues?.birthDate) || values.birthDate).format("YYYY-MM-DD")) as any) : null}
                 onChange={(e) => handleDateChange("birthDate", e)}
-                onClick={(e) => console.log("eee", e)}
                 showMonthAndYearPickers
                 label="Birth Date"
                 variant="bordered"
@@ -166,7 +164,7 @@ const EmployeeCreateForm = ({ create, update, session }) => {
               <Label>입사일</Label>
               {/* <Input placeholder="입사일을 입력해주세요." /> */}
               <DatePicker
-                value={updateValues.startDate || values?.startdate ? parseDate(moment(updateValues.startDate || values?.startdate).format("YYYY-MM-DD")) : null}
+                value={(update && updateValues?.startDate) || values?.startDate ? (parseDate(moment((update && updateValues?.startDate) || values.startDate).format("YYYY-MM-DD")) as any) : null}
                 onChange={(e) => handleDateChange("startDate", e)}
                 showMonthAndYearPickers
                 label="Start Date"
@@ -177,7 +175,7 @@ const EmployeeCreateForm = ({ create, update, session }) => {
               <Label>퇴사일</Label>
               {/* <Input placeholder="입사일을 입력해주세요." /> */}
               <DatePicker
-                value={updateValues?.endDate || values?.enddate ? parseDate(moment(updateValues?.endDate || values?.enddate).format("YYYY-MM-DD")) : null}
+                value={(update && updateValues?.endDate) || values?.endDate ? (parseDate(moment((update && updateValues?.endDate) || values.endDate).format("YYYY-MM-DD")) as any) : null}
                 onChange={(e) => handleDateChange("endDate", e)}
                 showMonthAndYearPickers
                 label="End Date"
