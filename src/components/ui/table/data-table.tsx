@@ -47,8 +47,6 @@ export function DataTable<TData, TValue>({ columns, data, totalItems, pageSizeOp
     manualFiltering: true,
   });
 
-  console.log("datatatat", data);
-
   return (
     <div className="space-y-4">
       <ScrollArea className="grid h-[calc(80vh-220px)] rounded-md border md:h-[calc(90dvh-240px)] text-nowrap">
@@ -67,7 +65,6 @@ export function DataTable<TData, TValue>({ columns, data, totalItems, pageSizeOp
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => {
-                    console.log("cccc", cell.column.columnDef.cell);
                     return <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>;
                   })}
                 </TableRow>

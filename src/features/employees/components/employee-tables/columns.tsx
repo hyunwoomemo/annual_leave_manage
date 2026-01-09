@@ -1,10 +1,9 @@
 "use client";
 import { Product } from "@/constants/data";
 import { ColumnDef } from "@tanstack/react-table";
-import Image from "next/image";
-import { CellAction } from "./cell-action";
 import moment from "moment";
 import Link from "next/link";
+import { CellAction } from "./cell-action";
 
 export const columns: ColumnDef<Product>[] = [
   // {
@@ -71,7 +70,7 @@ export const columns: ColumnDef<Product>[] = [
     header: "연차 갯수",
     cell: ({ row }) => {
       return (
-        <Link className="hover:text-orange-400" href={`/dashboard/employee/${row.original.employee_num}/annualleave`}>
+        <Link className="hover:text-orange-400" href={`/dashboard/employee/${row.original.id}/annualleave`}>
           {row.getValue("annual_leave_count") - row.original.use_leave_count}
         </Link>
       );

@@ -1,4 +1,3 @@
-import { auth } from "@/lib/auth";
 import executeQuery from "@/lib/db";
 import { NextResponse } from "next/server";
 export async function GET(req: Request, { params }) {
@@ -7,7 +6,11 @@ export async function GET(req: Request, { params }) {
     // 서버 사이드에서 세션 가져오기
 
     const employeeId = (await params).employeeId;
+    const { searchParams } = new URL(req.url);
+    const year = parseInt(searchParams.get("year") || "2025");
+
     console.log("employeeId", employeeId);
+    console.log("📅 year:", year);
 
     const sql = `SELECT 
     e.*,
@@ -25,6 +28,7 @@ export async function GET(req: Request, { params }) {
         )
       FROM annual_leave al 
       WHERE al.status = 1 AND al.employee_id = e.id AND al.type IN (1,2,3)
+        AND YEAR(al.start_date) = ${year}
     ), 0)
   ) AS use_leave_count,
 
@@ -32,34 +36,37 @@ export async function GET(req: Request, { params }) {
         -- 연차 발생량 계산: 기본 연차 + 관리자 지급 - 관리자 차감
         (
 CASE
-    WHEN ABS(DATEDIFF('2025-01-01', e.startDate)) >= 365
-         AND (e.enddate IS NULL OR e.enddate > '2025-01-01') THEN
+    WHEN ABS(DATEDIFF('${year}-01-01', e.startDate)) >= 365
+         AND (e.enddate IS NULL OR e.enddate > '${year}-01-01') THEN
         15
     ELSE 0
 END
             +
            CASE
-        -- 2025년 1월 1일 기준 1년 미만 근무자: 1년 도달 전까지 매월 1개씩
-        WHEN  DATEDIFF('2025-01-01', e.startDate) < 365 THEN
+        -- ${year}년 1월 1일 기준 1년 미만 근무자: 1년 도달 전까지 매월 1개씩 (퇴사일 이후는 제외)
+        WHEN  DATEDIFF('${year}-01-01', e.startDate) < 365 THEN
             TIMESTAMPDIFF(
                 MONTH,
-                GREATEST(e.startDate, '2025-01-01'),
+                GREATEST(e.startDate, '${year}-01-01'),
                 LEAST(
                     DATE_ADD(e.startDate, INTERVAL 1 YEAR),
-                    IFNULL(e.enddate, CURRENT_DATE())
+                    CASE 
+                        WHEN e.enddate IS NULL THEN LEAST(CURRENT_DATE(), '${year}-12-31')
+                        ELSE LEAST(e.enddate, LEAST(CURRENT_DATE(), '${year}-12-31'))
+                    END
                 )
             )
         ELSE 0
     END
             +
             CASE
-                WHEN ABS(DATEDIFF('2025-01-01', e.startDate)) < 365 AND DATEDIFF(CURRENT_DATE(), e.startDate) >= 365 THEN
+                WHEN ABS(DATEDIFF('${year}-01-01', e.startDate)) < 365 AND DATEDIFF(LEAST(CURRENT_DATE(), '${year}-12-31'), e.startDate) >= 365 THEN
                     ROUND((DATEDIFF(CONCAT(YEAR(e.startDate), '-12-31'), e.startDate) / 366) * 15)
                 ELSE 0
             END
             +
             CASE 
-                WHEN YEAR(CURRENT_DATE()) > 2025 AND DATEDIFF(CURRENT_DATE(), e.startDate) >= 365 THEN 15
+                WHEN YEAR(LEAST(CURRENT_DATE(), '${year}-12-31')) > ${year} AND DATEDIFF(LEAST(CURRENT_DATE(), '${year}-12-31'), e.startDate) >= 365 THEN 15
                 ELSE 0
             END
             +
@@ -69,6 +76,7 @@ END
         IFNULL(SUM(al.given_number), 0) 
     FROM annual_leave al
     WHERE al.status = 1 AND al.employee_id = e.id AND al.type = 11
+      AND YEAR(al.start_date) = ${year}
 )
             -
 (
@@ -77,10 +85,11 @@ END
         IFNULL(SUM(ABS(al.given_number)), 0) 
     FROM annual_leave al
     WHERE al.status = 1 AND al.employee_id = e.id AND al.type = 12
+      AND YEAR(al.start_date) = ${year}
 )
         )
     ) AS annual_leave_count
-FROM employees e WHERE e.employee_num = ?;
+FROM employees e WHERE e.id = ?;
 `;
     const values = [employeeId];
     console.log("ss", sql, values);

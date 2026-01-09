@@ -44,7 +44,7 @@ export function DataTableFilterBox({ filterKey, title, options, setFilterValue, 
     setFilterValue(Array.from(newSet).join(".") || null);
   };
 
-  const resetFilter = () => setFilterValue(null);
+  const resetFilter = () => setFilterValue("all");
 
   return (
     <Popover>

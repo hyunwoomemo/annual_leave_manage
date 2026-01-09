@@ -3,14 +3,14 @@ import { buttonVariants } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 import { DataTableSkeleton } from "@/components/ui/table/data-table-skeleton";
-import ProductListingPage from "@/features/employees/components/employee-listing";
-import ProductTableAction from "@/features/employees/components/employee-tables/employee-table-action";
 import { searchParamsCache, serialize } from "@/lib/searchparams";
 import { cn } from "@/lib/utils";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { SearchParams } from "nuqs/server";
 import { Suspense } from "react";
+import ProductListingPage from "@/features/employees/components/employee-listing";
+import ProductTableAction from "@/features/employees/components/employee-tables/employee-table-action";
 
 export const metadata = {
   title: "연차 관리: Employee",
@@ -31,18 +31,11 @@ export default async function Page(props: pageProps) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/site/departments`);
   const json = await res.json();
 
-  const departments = [
-    { value: "all", label: "전체" },
-    ...json.data.map((v) => {
-      return { value: v.department, label: v.department };
-    }),
-  ];
+  const departments = json.data.map((v) => {
+    return { value: v.department, label: v.department };
+  });
 
-  const employmentStatuses = [
-    { value: "all", label: "전체" },
-    { value: "employed", label: "재직 중" },
-    { value: "not_employed", label: "퇴사" },
-  ];
+  console.log("debug::: ", json, departments);
 
   return (
     <PageContainer>
@@ -54,7 +47,7 @@ export default async function Page(props: pageProps) {
           </Link>
         </div>
         <Separator />
-        <ProductTableAction departments={departments} employmentStatuses={employmentStatuses} />
+        <ProductTableAction departments={departments} />
         <Suspense key={key} fallback={<DataTableSkeleton columnCount={5} rowCount={10} />}>
           <ProductListingPage />
         </Suspense>

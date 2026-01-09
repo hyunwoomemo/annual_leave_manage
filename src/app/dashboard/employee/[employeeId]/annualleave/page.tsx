@@ -1,34 +1,28 @@
 import PageContainer from "@/components/layout/page-container";
-import { Heading } from "@/components/ui/heading";
-import { Separator } from "@/components/ui/separator";
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import MyAnnualLeaveViewPage from "@/features/my/components/my-annual-leave-view-page";
-import { auth } from "@/lib/auth";
 import MyAnnualLeaveListing from "@/features/my/components/my-annual-leave-listing";
+import MyAnnualLeaveViewPage from "@/features/my/components/my-annual-leave-view-page";
 import { searchParamsCache } from "@/lib/searchparams";
+import YearTabs from "./year-tabs";
+
 const page = async (props) => {
   const searchParams = await props.searchParams;
   // Allow nested RSCs to access the search params (in a type-safe way)
   searchParamsCache.parse(searchParams);
 
+  const year = searchParams.year || new Date().getFullYear().toString();
+
   const employeeId = await props.params.employeeId;
-  console.log("propsprops", employeeId);
+  console.log("propsprops", year);
 
-  const session = await auth();
-
-  const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/employee/info/${employeeId}`);
+  const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/employee/info/${employeeId}?year=${year}`);
   const json = await data.json();
-
-  console.log("json", json);
 
   return (
     <PageContainer>
-      <MyAnnualLeaveViewPage data={json} manage />
+      <YearTabs currentYear={year} />
+      <MyAnnualLeaveViewPage data={json} />
       {/* <Separator /> */}
-      <MyAnnualLeaveListing employee_id={json.id} />
+      <MyAnnualLeaveListing employee_id={employeeId} year={year} />
     </PageContainer>
   );
 };

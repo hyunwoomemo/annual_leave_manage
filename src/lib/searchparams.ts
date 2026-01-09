@@ -6,6 +6,7 @@ export const searchParams = {
   q: parseAsString,
   gender: parseAsString,
   departments: parseAsString,
+  isEmployed: parseAsString,
   year: parseAsInteger,
   month: parseAsInteger,
 };

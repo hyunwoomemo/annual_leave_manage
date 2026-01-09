@@ -17,21 +17,23 @@ export const CATEGORY_OPTIONS = [
 export function useProductTableFilters() {
   const [searchQuery, setSearchQuery] = useQueryState("q", searchParams.q.withOptions({ shallow: false, throttleMs: 500 }).withDefault(""));
 
-  const [departmentsFilter, setDepartmentsFilter] = useQueryState("departments", searchParams.departments.withOptions({ shallow: false }).withDefault(""));
+  const [departmentsFilter, setDepartmentsFilter] = useQueryState("departments", searchParams.departments.withOptions({ shallow: false }).withDefault("전체"));
+
+  const [isEmployedFilter, setIsEmployedFilter] = useQueryState("isEmployed", searchParams.isEmployed.withOptions({ shallow: false }).withDefault("전체"));
 
   const [page, setPage] = useQueryState("page", searchParams.page.withDefault(1));
 
   const resetFilters = useCallback(() => {
     setSearchQuery(null);
-    setDepartmentsFilter(null);
+    setDepartmentsFilter("all");
+    setIsEmployedFilter("all");
 
     setPage(1);
-  }, [setSearchQuery, setDepartmentsFilter, setPage]);
+  }, [setSearchQuery, setDepartmentsFilter, setIsEmployedFilter, setPage]);
 
   const isAnyFilterActive = useMemo(() => {
-    return !!searchQuery || !!departmentsFilter;
-  }, [searchQuery, departmentsFilter]);
-
+    return !!searchQuery || !!departmentsFilter || !!isEmployedFilter;
+  }, [searchQuery, departmentsFilter, isEmployedFilter]);
   return {
     searchQuery,
     setSearchQuery,
@@ -41,5 +43,7 @@ export function useProductTableFilters() {
     isAnyFilterActive,
     departmentsFilter,
     setDepartmentsFilter,
+    isEmployedFilter,
+    setIsEmployedFilter,
   };
 }
