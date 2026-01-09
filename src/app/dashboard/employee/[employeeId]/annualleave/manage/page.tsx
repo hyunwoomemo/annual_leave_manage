@@ -1,9 +1,7 @@
+"use server";
 import PageContainer from "@/components/layout/page-container";
-import AnnualLeaveCreateForm from "@/features/annualleave/components/annualleave-create-form";
 import AnnualLeaveManageForm from "@/features/annualleave/components/annualleave-manage-form";
-import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 export default async function AnnualManageViewPage(props) {
   console.log("props", props.params);
   const employee_num = await props.params.employeeId;
