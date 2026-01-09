@@ -4,24 +4,27 @@ const withPWA = require("next-pwa")({
   dest: "public",
 });
 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
+  turbopack: {}, // ⭐ 이 한 줄 추가 (핵심)
+
   typescript: {
-    ignoreBuildErrors: true /** 설정할 경우 빌드시 타입 에러 통과 */,
+    ignoreBuildErrors: true,
   },
+
   images: {
     remotePatterns: [
       {
         protocol: "https",
         hostname: "utfs.io",
-        port: "",
       },
       {
         protocol: "https",
         hostname: "api.slingacademy.com",
-        port: "",
       },
     ],
   },
+
   transpilePackages: ["geist"],
 };
 
