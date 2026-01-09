@@ -9,7 +9,6 @@ import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import GithubSignInButton from "./github-auth-button";
 
 const formSchema = z.object({
   employee_num: z.any(),
@@ -40,6 +39,7 @@ export default function UserAuthForm() {
 
   const onSubmit = async (data: UserFormValue) => {
     try {
+      console.log("data", data);
       const res = await signIn("credentials", {
         employee_num: data.employee_num,
         password: data.password,

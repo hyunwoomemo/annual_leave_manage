@@ -1,9 +1,6 @@
-import { NextAuthConfig } from "next-auth";
+import { CredentialsSignin, NextAuthConfig } from "next-auth";
 import CredentialProvider from "next-auth/providers/credentials";
 import GithubProvider from "next-auth/providers/github";
-import db from "./db";
-import executeQuery from "./db";
-import { CredentialsSignin } from "next-auth";
 
 const authConfig = {
   secret: process.env.NEXTAUTH_SECRET,

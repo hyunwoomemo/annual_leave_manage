@@ -81,7 +81,7 @@ export function DataTableFilterBox({ filterKey, title, options, setFilterValue, 
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
-              {options.map((option) => (
+              {options?.map((option) => (
                 <CommandItem key={option.value} onSelect={() => handleSelect(option.value)}>
                   <div
                     className={cn(

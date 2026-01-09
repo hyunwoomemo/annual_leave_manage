@@ -8,6 +8,8 @@ export async function POST(req: Request) {
   try {
     if (employee_num && password) {
       const sql = "select * from employees where employee_num = ? and password = ? and status > -1";
+
+      console.log("sql", sql);
       const values = [employee_num, password];
 
       const [result] = await executeQuery(sql, values);
