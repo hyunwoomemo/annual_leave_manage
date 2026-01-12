@@ -14,7 +14,6 @@ export const annualLeaveSchema = z.object({
   date: z.string().refine((value) => /^\d{4}-\d{2}-\d{2}$/.test(value), {
     message: "Start date should be in the format YYYY-MM-DD",
   }),
-  ㄷ,
 });
 
 export type AnnualLeaveFormValues = z.infer<typeof annualLeaveSchema>;

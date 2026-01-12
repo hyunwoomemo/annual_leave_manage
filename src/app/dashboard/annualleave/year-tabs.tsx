@@ -7,7 +7,7 @@ interface YearTabsProps {
   currentYear: string;
 }
 
-export default function YearTabs({ currentYear = new Date().getFullYear().toString() }: YearTabsProps) {
+export default function YearTabs({ currentYear }: YearTabsProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 

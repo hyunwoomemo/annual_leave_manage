@@ -7,6 +7,7 @@ import AnnualLeaveTableAction from "@/features/annualleave/components/annualleav
 import { searchParamsCache, serialize } from "@/lib/searchparams";
 import { SearchParams } from "nuqs/server";
 import { Suspense } from "react";
+import YearTabs from "./year-tabs";
 
 export const metadata = {
   title: "연차 관리: Annualleave",
@@ -22,6 +23,7 @@ export default async function Page(props: pageProps) {
   searchParamsCache.parse(searchParams);
 
   const key = serialize({ ...searchParams });
+  const year = searchParams.year || new Date().getFullYear().toString();
 
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/site/departments`);
   const json = await res.json();
@@ -37,9 +39,10 @@ export default async function Page(props: pageProps) {
           <Heading title="연차 신청 목록" description="" />
         </div>
         <Separator />
+        <YearTabs currentYear={year} />
         <AnnualLeaveTableAction departments={departments} />
         <Suspense key={key} fallback={<DataTableSkeleton columnCount={5} rowCount={10} />}>
-          <AnnualLeaveListingPage />
+          <AnnualLeaveListingPage year={year} />
         </Suspense>
       </div>
     </PageContainer>
