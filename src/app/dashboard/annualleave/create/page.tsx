@@ -6,7 +6,7 @@ export default async function AnnualCreateViewPage() {
   const session = await auth();
   console.log("123123", session);
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/employee/info/${session?.user?.employee_num}`);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/employee/info/${session?.user?.id}`);
   const json = await res.json();
 
   console.log("kjkjj", json);
