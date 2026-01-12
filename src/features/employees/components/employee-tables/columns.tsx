@@ -69,6 +69,7 @@ export const columns: ColumnDef<Product>[] = [
     accessorKey: "annual_leave_count",
     header: "연차 갯수",
     cell: ({ row }) => {
+      console.log("row.original", row.original);
       return (
         <Link className="hover:text-orange-400" href={`/dashboard/employee/${row.original.id}/annualleave`}>
           {row.getValue("annual_leave_count") - row.original.use_leave_count}
