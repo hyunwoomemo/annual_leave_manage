@@ -10,7 +10,7 @@ const page = async (props) => {
   searchParamsCache.parse(searchParams);
 
   const year = searchParams.year || new Date().getFullYear().toString();
-  
+
   const params = await props.params;
   const employeeId = params.employeeId;
   console.log("employeeId", employeeId);
@@ -18,6 +18,8 @@ const page = async (props) => {
 
   const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/employee/info/${employeeId}?year=${year}`);
   const json = await data.json();
+
+  console.log("jsonjsonjson", json);
 
   return (
     <PageContainer>

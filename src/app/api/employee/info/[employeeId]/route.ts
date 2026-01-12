@@ -23,11 +23,12 @@ export async function GET(req: Request, { params }) {
             WHEN al.type = 1 THEN ABS(DATEDIFF(al.end_date, al.start_date)) + 1
             WHEN al.type = 2 THEN 0.5
             WHEN al.type = 3 THEN 0.25
+            WHEN al.type = 12 THEN ABS(al.given_number)
             ELSE 0
           END
         )
       FROM annual_leave al 
-      WHERE al.status = 1 AND al.employee_id = e.id AND al.type IN (1,2,3)
+      WHERE al.status = 1 AND al.employee_id = e.id AND al.type IN (1,2,3, 12)
         AND YEAR(al.start_date) = ${year}
     ), 0)
   ) AS use_leave_count,
@@ -78,15 +79,7 @@ END
     WHERE al.status = 1 AND al.employee_id = e.id AND al.type = 11
       AND YEAR(al.start_date) = ${year}
 )
-            -
-(
-    -- 관리자 차감 (type 12) 빼기
-    SELECT 
-        IFNULL(SUM(ABS(al.given_number)), 0) 
-    FROM annual_leave al
-    WHERE al.status = 1 AND al.employee_id = e.id AND al.type = 12
-      AND YEAR(al.start_date) = ${year}
-)
+
         )
     ) AS annual_leave_count
 FROM employees e WHERE e.id = ?;
